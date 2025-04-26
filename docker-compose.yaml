@@ -1,0 +1,22 @@
+services:
+  frontend:
+    container_name: frontend
+    image: frontend
+    build:
+      context: ./fsp-frontend
+      dockerfile: frontend.DockerFile
+      target: dev
+    ports:
+      - 3000:3000
+    env_file:
+      - ./fsp-frontend/.env
+    restart: always
+    develop:
+      watch:
+        - action: sync
+          path: ./fsp-frontend/src
+          target: /app/src
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json 
