@@ -11,6 +11,8 @@ services:
     env_file:
       - ./fsp-frontend/.env
     restart: always
+    depends_on:
+      - backend
     develop:
       watch:
         - action: sync
@@ -19,4 +21,23 @@ services:
           ignore:
             - node_modules/
         - action: rebuild
-          path: package.json 
+          path: package.json
+  backend:
+    container_name: backend
+    image: backend
+    build:
+      context: ./fsp-backend
+      dockerfile: backend.DockerFile
+    ports:
+      - 8080:8080
+    env_file:
+      - ./fsp-backend/.env
+    develop:
+      watch:
+        - action: sync
+          path: ./fsp-backend/src
+          target: /app/src
+          ignore: 
+            - node_modules/
+        - action: rebuild
+          path: package.json
