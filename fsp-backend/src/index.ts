@@ -6,6 +6,8 @@ const app = express()
 const port = process.env.PORT || 8080
 
 const corsOptions = {
+  allowedHeaders: ["Authorization", "Content-Type"],
+  methods: ["GET", "POST"],
   origin:
     process.env.NODE_ENV === "development"
       ? process.env.FRONTEND_LOCAL_URL
