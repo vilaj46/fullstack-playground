@@ -9,11 +9,13 @@ export default function Home() {
   useEffect(() => {
     const fetchHelloWorld = async () => {
       try {
-        const response = await axios.get(
-          process.env.NODE_ENV === "development"
-            ? "http://localhost:8080/"
-            : "api.julianvila.com"
-        )
+        const response = await axios({
+          baseURL:
+            process.env.NEXT_PUBLIC_NODE_ENV === "development"
+              ? process.env.NEXT_PUBLIC_BACKEND_BASE_URL
+              : process.env.NEXT_PUBLIC_API_URL,
+          method: "GET",
+        })
         setRes(response.data.result)
       } catch (err) {
         setRes(`${err}`)

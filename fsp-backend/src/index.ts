@@ -5,8 +5,14 @@ import cors from "cors"
 const app = express()
 const port = process.env.PORT || 8080
 
-// TODO: Only allow our client
-app.use(cors())
+const corsOptions = {
+  origin:
+    process.env.NODE_ENV === "development"
+      ? process.env.FRONTEND_LOCAL_URL
+      : process.env.FRONTEND_BASE_URL,
+}
+
+app.use(cors(corsOptions))
 app.use(express.json())
 
 app.get("/", (_req, res) => {
