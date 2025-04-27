@@ -27,6 +27,7 @@ RUN apt-get update && apt-get install -y \
 RUN useradd -m -s /bin/bash pptruser
 
 ENV CHROME_DEVEL_SANDBOX=/usr/local/sbin/chrome-devel-sandbox
+ENV NODE_ENV=development
 
 # Optional: install Chromium if you want to use system Chromium
 # RUN apt-get update && apt-get install -y chromium
