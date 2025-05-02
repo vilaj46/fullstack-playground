@@ -22,6 +22,10 @@ services:
             - node_modules/
         - action: rebuild
           path: package.json
+        - action: rebuild
+          path: ./shared
+    volumes:
+      - ./shared:/app/shared
   backend:
     container_name: backend
     image: backend
@@ -36,8 +40,13 @@ services:
       watch:
         - action: sync
           path: ./fsp-backend/src
-          target: /app/src
+          target: /app/fsp-backend/src
           ignore: 
             - node_modules/
         - action: rebuild
           path: package.json
+        - action: rebuild
+          path: ./shared
+    volumes:
+      - ./shared:/app/shared  
+      

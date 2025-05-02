@@ -34,16 +34,19 @@ ENV NODE_ENV=development
 
 WORKDIR /app
 
-COPY package*.json ./
+RUN mkdir -p /app/fsp-backend
+
+COPY package*.json ./fsp-backend
+
+WORKDIR /app/fsp-backend
 
 RUN npm install
 
 COPY . .
 
-RUN chown -R pptruser:node /app/pdfs
+RUN chown -R pptruser:node /app/fsp-backend/pdfs
 
 USER pptruser
-
 
 EXPOSE 8080
 
