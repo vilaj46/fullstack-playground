@@ -1,46 +1,22 @@
-"use client"
+import Link from "next/link"
 
-import { useEffect, useState } from "react"
-import axios from "axios"
-
-import { TTodo } from "shared/types"
+import { homePageModules } from "@/lib/constants"
 
 export default function Home() {
-  const [res, setRes] = useState("")
-  const todos: Array<TTodo> = [
-    {
-      completed: false,
-      id: 1,
-      task: "number",
-    },
-  ]
-
-  useEffect(() => {
-    const fetchHelloWorld = async () => {
-      try {
-        const response = await axios({
-          baseURL:
-            process.env.NEXT_PUBLIC_NODE_ENV === "development"
-              ? process.env.NEXT_PUBLIC_BACKEND_BASE_URL
-              : process.env.NEXT_PUBLIC_API_URL,
-          method: "GET",
-        })
-        setRes(response.data.result)
-      } catch (err) {
-        setRes(`${err}`)
-      }
-    }
-
-    fetchHelloWorld()
-  }, [])
-
   return (
-    <div>
-      <h1>Home :|</h1>
-      <p>{res}</p>
-      {todos.map((todo) => (
-        <p key={todo.id}>{todo.task}</p>
-      ))}
-    </div>
+    <main className="bg-gray-100 text-gray-900 font-mono flex flex-col items-center min-h-screen p-10">
+      <h1 className="text-6xl font-bold text-gray-800 self-start">Home Page</h1>
+      <div className="grid grid-cols-2 gap-6 mt-10 w-full max-w-4xl">
+        {homePageModules.map((module, index) => (
+          <Link
+            className="p-6 border-4 border-gray-800 bg-blue-400 text-gray-900 text-2xl shadow-lg hover:bg-gray-800 hover:text-white transition-all"
+            key={module.href}
+            href={module.href}
+          >
+            Module {index + 1}: {module.label}
+          </Link>
+        ))}
+      </div>
+    </main>
   )
 }
