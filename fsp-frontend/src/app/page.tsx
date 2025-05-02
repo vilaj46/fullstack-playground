@@ -3,8 +3,17 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
 
+import { TTodo } from "shared/types"
+
 export default function Home() {
   const [res, setRes] = useState("")
+  const todos: Array<TTodo> = [
+    {
+      completed: false,
+      id: 1,
+      task: "number",
+    },
+  ]
 
   useEffect(() => {
     const fetchHelloWorld = async () => {
@@ -29,6 +38,9 @@ export default function Home() {
     <div>
       <h1>Home :|</h1>
       <p>{res}</p>
+      {todos.map((todo) => (
+        <p key={todo.id}>{todo.task}</p>
+      ))}
     </div>
   )
 }
