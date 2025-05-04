@@ -2,7 +2,7 @@ import fs from "fs"
 import matter from "gray-matter"
 import path from "path"
 
-import { Blog } from "@/app/blog/types"
+import type { Blog } from "@/app/blog/types"
 
 const POSTS_DIR = ["src", "app", "blog", "posts"]
 
