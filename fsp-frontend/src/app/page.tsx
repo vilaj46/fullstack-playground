@@ -1,15 +1,17 @@
 import Link from "next/link"
 
-import { homePageModules } from "@/lib/constants"
+import routes from "@/lib/constants"
 
-export default function Home() {
+const Home = () => {
+  const homePageModules = [routes.BLOG, routes.TODO]
+
   return (
-    <main className="bg-gray-100 text-gray-900 font-mono flex flex-col items-center min-h-screen p-10">
-      <h1 className="text-6xl font-bold text-gray-800 self-start">Home Page</h1>
-      <div className="grid grid-cols-2 gap-6 mt-10 w-full max-w-4xl">
+    <main className="bg-gray-100 flex flex-col font-mono items-center min-h-screen p-10 text-gray-900">
+      <h1 className="font-bold self-start text-6xl text-gray-800">Home Page</h1>
+      <div className="gap-6 grid grid-cols-2 max-w-4xl mt-10 w-full">
         {homePageModules.map((module, index) => (
           <Link
-            className="p-6 border-4 border-gray-800 bg-blue-400 text-gray-900 text-2xl shadow-lg hover:bg-gray-800 hover:text-white transition-all"
+            className="bg-blue-400 border-4 border-gray-800 p-6 shadow-lg text-2xl text-gray-900 transition-all hover:bg-gray-800 hover:text-white"
             key={module.href}
             href={module.href}
           >
@@ -20,3 +22,5 @@ export default function Home() {
     </main>
   )
 }
+
+export default Home

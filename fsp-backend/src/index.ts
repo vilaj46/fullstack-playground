@@ -2,7 +2,7 @@ import "dotenv/config"
 import express from "express"
 import cors from "cors"
 
-import { TTodo } from "shared/types"
+import { TTodo } from "@shared/types"
 
 const app = express()
 const port = process.env.PORT || 8080
@@ -27,11 +27,17 @@ app.get("/", (_req, res) => {
 
 // ###################################################################
 
-const todos: Array<TTodo> = []
+const todos: Array<TTodo> = [
+  {
+    id: 1,
+    completed: false,
+    task: "Test",
+  },
+]
 
 app.get("/todos", (_req, res) => {
   res.status(200).json({
-    result: "undefined",
+    result: todos,
   })
 })
 

@@ -1,15 +1,23 @@
 type TApiBaseResponse = {
   code: number
   message?: string
-  status?: string
 }
 
+type TApiErrors = {
+  message: string
+} & Record<string, string>
+
 type TApiErrorResponse = {
-  errors: Record<string, string>
+  errors: TApiErrors
+  status: "error"
 }
 
 type TApiSuccessResponse<Data> = {
-  data: Data
+  result: Data
+  status: "success"
 }
 
-export type { TApiBaseResponse, TApiErrorResponse, TApiSuccessResponse }
+type TApiResponse<Data> = TApiBaseResponse &
+  (TApiErrorResponse | TApiSuccessResponse<Data>)
+
+export type { TApiResponse, TApiErrorResponse, TApiSuccessResponse }

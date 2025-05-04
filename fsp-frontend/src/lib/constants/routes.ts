@@ -16,7 +16,7 @@ function createRoute(
   }
 }
 
-const baseRoutes = {
+export default {
   BLOG: createRoute("Blog", "/blog"),
   HOME: createRoute("Home", "/"),
   TODO: createRoute("Todo", "/todo"),
@@ -26,5 +26,4 @@ const baseRoutes = {
   ]),
 }
 
-export const topNavigationRoutes = [baseRoutes.HOME, baseRoutes.MODULE]
-export const homePageModules = [baseRoutes.BLOG, baseRoutes.TODO]
+// export const topNavigationRoutes = [baseRoutes.HOME, baseRoutes.MODULE]
