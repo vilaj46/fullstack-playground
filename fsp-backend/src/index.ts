@@ -2,14 +2,16 @@ import "dotenv/config"
 import express from "express"
 import cors from "cors"
 
-import { TTodo } from "@shared/types"
+import routes from "@/routes"
+
+import errorMiddleware from "@/middleware"
 
 const app = express()
 const port = process.env.PORT || 8080
 
 const corsOptions = {
   allowedHeaders: ["Authorization", "Content-Type"],
-  methods: ["GET", "POST"],
+  methods: ["DELETE", "GET", "PATCH", "POST"],
   origin:
     process.env.NODE_ENV === "development"
       ? process.env.FRONTEND_LOCAL_URL
@@ -18,28 +20,8 @@ const corsOptions = {
 
 app.use(cors(corsOptions))
 app.use(express.json())
-
-app.get("/", (_req, res) => {
-  res.status(200).json({
-    result: "Hello, world!!!!",
-  })
-})
-
-// ###################################################################
-
-const todos: Array<TTodo> = [
-  {
-    id: 1,
-    completed: false,
-    task: "Test",
-  },
-]
-
-app.get("/todos", (_req, res) => {
-  res.status(200).json({
-    result: todos,
-  })
-})
+app.use(routes)
+app.use(errorMiddleware)
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}.`)

@@ -40,14 +40,18 @@ COPY package*.json ./fsp-backend
 
 WORKDIR /app/fsp-backend
 
+RUN apt-get update && apt-get install -y postgresql postgresql-contrib
+
 RUN npm install
 
 COPY . .
 
-RUN chown -R pptruser:node /app/fsp-backend/pdfs
+RUN chown -R pptruser:node /app/fsp-backend
 
 USER pptruser
 
+# RUN node /app/fsp-backend/src/db/seed.js
+
 EXPOSE 8080
 
-CMD ["npm", "run", "dev"]
+CMD ["sh", "-c", "npm run seed --exit && npm run dev"]

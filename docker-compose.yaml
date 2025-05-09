@@ -1,3 +1,7 @@
+networks:
+  backend:
+    driver: bridge
+
 services:
   frontend:
     container_name: frontend
@@ -27,6 +31,8 @@ services:
     volumes:
       - ./shared:/app/shared
   backend:
+    networks: 
+      - backend
     container_name: backend
     image: backend
     build:
@@ -36,6 +42,10 @@ services:
       - 8080:8080
     env_file:
       - ./fsp-backend/.env
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
     develop:
       watch:
         - action: sync
@@ -49,4 +59,27 @@ services:
           path: ./shared
     volumes:
       - ./shared:/app/shared  
+  db:
+    networks:
+      - backend
+    container_name: db
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d fsp-db" ]
+      interval: 15s
+      retries: 10
+      start_period: 30s
+      timeout: 10s
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: fsp-db
+    volumes:
+      - psql:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+volumes:
+  psql:
+
       
