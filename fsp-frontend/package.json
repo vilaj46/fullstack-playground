@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "postbuild": "cp -r ../shared ./dist/shared"
+    "postbuild": "xcopy \"../shared\" \".next\\shared\" /E /I"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.75.1",
