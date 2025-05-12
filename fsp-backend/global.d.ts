@@ -3,7 +3,8 @@ declare global {
     interface ProcessEnv {
       FRONTEND_BASE_URL?: string
       FRONTEND_LOCAL_URL?: string
-      NODE_ENV?: "development" | "production"
+      NODE_ENV?: "development" | "production" | "test"
+      SECRET_KEY?: string
     }
   }
 }

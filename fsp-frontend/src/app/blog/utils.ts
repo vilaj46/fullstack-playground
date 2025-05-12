@@ -6,7 +6,7 @@ import type { Blog } from "@/app/blog/types"
 
 const POSTS_DIR = ["src", "app", "blog", "posts"]
 
-export default function (): Array<Blog> {
+function getBlogPosts(): Array<Blog> {
   const basePath = path.join(process.cwd(), ...POSTS_DIR)
   const filenames = fs.readdirSync(basePath)
 
@@ -25,3 +25,5 @@ export default function (): Array<Blog> {
 
   return posts
 }
+
+export default getBlogPosts

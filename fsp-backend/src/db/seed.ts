@@ -1,14 +1,24 @@
-require("dotenv").config()
-const postgres = require("postgres")
+import "dotenv/config"
 
-const sql = postgres(
-  `postgres://${process.env.POSTGRES_USERNAME}:${process.env.POSTGRES_PASSWORD}@${process.env.POSTGRES_CONTAINER}:${process.env.POSTGRES_PORT}/${process.env.POSTGRES_DB}`
-)
+import sql from "./index"
 
 async function seedDatabase() {
+  if (process.env.NODE_ENV === "test") {
+    console.log("Test environment -- not seeding.")
+    return
+  }
+
   try {
-    // Create table if it doesn't exist
-    await dropTables()
+    await sql`DROP SCHEMA public CASCADE;`
+    await sql`CREATE SCHEMA public;`
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS person (
+        id SERIAL PRIMARY KEY,
+        username TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL
+      );
+    `
     await sql`
       CREATE TABLE IF NOT EXISTS todo (
         id SERIAL PRIMARY KEY,
@@ -17,7 +27,10 @@ async function seedDatabase() {
       );
     `
 
-    // Insert sample data
+    await sql`
+      INSERT INTO person (username, password) VALUES
+      ('julian', 'vila')
+    `
     await sql`
       INSERT INTO todo (task, completed) VALUES
       ('Finish Docker setup', FALSE),
@@ -34,10 +47,3 @@ async function seedDatabase() {
 }
 
 seedDatabase()
-
-// HELPERS
-
-async function dropTables() {
-  await sql`DROP SCHEMA public CASCADE;`
-  await sql`CREATE SCHEMA public;`
-}

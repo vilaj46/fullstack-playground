@@ -16,14 +16,14 @@ function createRoute(
   }
 }
 
-export default {
+const routeObj = {
   BLOG: createRoute("Blog", "/blog"),
   HOME: createRoute("Home", "/"),
-  TODO: createRoute("Todo", "/todo"),
+  TODO: createRoute("Todo", "/csr/todos"),
   MODULE: createRoute("Module", "/module", [
     createRoute("Blog", "/blog"),
-    createRoute("Todo", "/todo"),
+    createRoute("Todo", "/csr/todos"),
   ]),
 }
 
-// export const topNavigationRoutes = [baseRoutes.HOME, baseRoutes.MODULE]
+export default routeObj

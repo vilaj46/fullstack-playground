@@ -10,6 +10,7 @@ const request = async <Response, Data = undefined, Errors = undefined>(
     const response = await axios<Response, AxiosResponse<Response>, Data>({
       ...config,
       baseURL: process.env.NEXT_PUBLIC_BACKEND_BASE_URL,
+      withCredentials: true,
     })
 
     return response.data

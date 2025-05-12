@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
 import type { TTodo } from "@/shared/types"
 
@@ -12,24 +11,7 @@ import {
   useToggleTodo,
 } from "@/lib/modules/todo/todoHooks"
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-      retry: false,
-    },
-  },
-})
-
-const Todos = () => (
-  <div>
-    <QueryClientProvider client={queryClient}>
-      <TodoList />
-    </QueryClientProvider>
-  </div>
-)
-
-function TodoList() {
+const Todos = () => {
   const [task, setTask] = useState("")
   const todosQueryResult = useGetAllTodos()
   const postTodoMutation = usePostTodo({

@@ -11,6 +11,7 @@ import "@/app/globals.css"
 // - Types & Interfaces
 // - Constants & Utilities
 // - Hooks
+// - Providers
 // - Components
 // - Styles
 // - Miscellaneous Files
@@ -28,7 +29,7 @@ const RootLayout = ({ children }: Props) => {
   const topNavigationRoutes = [routes.HOME, routes.MODULE]
   return (
     <html lang="en">
-      <body>
+      <body className="flex flex-col min-h-screen">
         <TopNavigation routes={topNavigationRoutes} />
         {children}
       </body>
