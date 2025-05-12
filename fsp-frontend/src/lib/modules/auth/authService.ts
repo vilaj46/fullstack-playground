@@ -1,8 +1,12 @@
 import type { TCredentialsDto } from "@/shared/types"
 
-import { postRequest } from "@/lib/utils/http-utils"
+import { getRequest, postRequest } from "@/lib/utils/http-utils"
+
+const getMe = async () => await getRequest("/me")
 
 const login = async (credentials: TCredentialsDto) =>
   await postRequest<unknown, TCredentialsDto>("/login", credentials)
 
-export { login }
+const postLogout = async () => await postRequest<unknown>("/logout")
+
+export { getMe, login, postLogout }

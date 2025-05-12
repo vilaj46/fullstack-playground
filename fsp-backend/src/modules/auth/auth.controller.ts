@@ -29,12 +29,35 @@ const login = async (
       sameSite: true,
     })
 
-    response.status(200).json({
-      message: "all good",
-    })
+    response.status(200).json(token)
   } catch (error) {
     next(error)
   }
 }
 
-export default { login }
+const postLogout = async (
+  _request: TRequest,
+  response: TResponse,
+  next: NextFunction
+) => {
+  try {
+    response.clearCookie("token")
+    response.status(200).json()
+  } catch (error) {
+    next(error)
+  }
+}
+
+const getMe = async (
+  _request: TRequest,
+  response: TResponse,
+  next: NextFunction
+) => {
+  try {
+    response.status(200).json()
+  } catch (error) {
+    next(error)
+  }
+}
+
+export default { getMe, login, postLogout }

@@ -40,7 +40,7 @@ const getRequest = <Response, Errors = undefined>(
 
 const postRequest = <Response, Data = undefined>(
   url: string,
-  data: Data,
+  data?: Data,
   config: AxiosRequestConfig = {}
 ) =>
   request<Response, Data>({

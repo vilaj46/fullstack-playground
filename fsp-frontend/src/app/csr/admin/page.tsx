@@ -12,9 +12,7 @@ const Admin = () => {
   const [password, setPassword] = useState("")
 
   const loginMutation = usePostLogin({
-    onSuccess: () => {
-      login()
-    },
+    onSuccess: () => login(),
   })
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
