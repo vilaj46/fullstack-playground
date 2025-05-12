@@ -1,8 +1,6 @@
 import {
   useMutation,
   useQuery,
-  type QueryKey,
-  type QueryOptions,
   type UseMutationOptions,
   type UseQueryOptions,
 } from "@tanstack/react-query"

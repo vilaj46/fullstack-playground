@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import { createContext, useContext, useState } from "react"
+import { createContext, useContext } from "react"
 import { usePathname } from "next/navigation"
 
 import { useGetMe, usePostLogout } from "@/lib/modules/auth/authHooks"
