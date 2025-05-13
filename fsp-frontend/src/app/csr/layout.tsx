@@ -3,6 +3,7 @@
 import type { ReactNode } from "react"
 
 import { AuthProvider, ReactQueryProvider } from "@/lib/providers"
+import AuthGuard from "@/lib/modules/auth/components/AuthGuard"
 type Props = {
   children: ReactNode
 }
@@ -10,7 +11,9 @@ type Props = {
 const CsrLayout = (props: Props) => {
   return (
     <ReactQueryProvider>
-      <AuthProvider>{props.children}</AuthProvider>
+      <AuthProvider>
+        <AuthGuard>{props.children}</AuthGuard>
+      </AuthProvider>
     </ReactQueryProvider>
   )
 }

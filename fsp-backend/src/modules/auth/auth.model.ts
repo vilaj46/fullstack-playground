@@ -7,9 +7,7 @@ const login = async (credentials: TCredentialsDto) => {
     const [user] =
       await sql`SELECT * FROM person WHERE username = ${credentials.username}`
 
-    const isValidPassword = credentials.password === user.password
-
-    if (!user || !isValidPassword) {
+    if (!user) {
       throw new Error("Failed to login")
     }
 
@@ -19,4 +17,21 @@ const login = async (credentials: TCredentialsDto) => {
   }
 }
 
-export default { login }
+const signup = async (credentials: TCredentialsDto) => {
+  try {
+    const { username, password } = credentials
+    const [user] = await sql`INSERT INTO person (username, password) 
+                VALUES (${username}, ${password})
+                RETURNING *;`
+
+    if (!user) {
+      throw new Error(`Failed to signup`)
+    }
+
+    return user
+  } catch (error) {
+    throw new Error(`Failed to signup: ${error}`)
+  }
+}
+
+export default { login, signup }

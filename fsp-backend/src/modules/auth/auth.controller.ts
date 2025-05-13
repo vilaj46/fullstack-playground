@@ -5,9 +5,23 @@ import { TCredentialsDto } from "@/shared/types"
 import { TRequest, TResponse } from "@/types"
 
 import authService from "@/modules/auth/auth.service"
-import { createSessionToken } from "@/modules/auth/auth.utils"
+import { createSessionToken, decodeToken } from "@/modules/auth/auth.utils"
 
-const login = async (
+const getPerson = async (
+  request: TRequest,
+  response: TResponse,
+  next: NextFunction
+) => {
+  try {
+    const { token } = request.cookies
+    const decoded = decodeToken(token)
+    response.status(200).json(decoded)
+  } catch (error) {
+    next(error)
+  }
+}
+
+const postLogin = async (
   request: TRequest<{
     reqBody: TCredentialsDto
   }>,
@@ -29,7 +43,9 @@ const login = async (
       sameSite: true,
     })
 
-    response.status(200).json(token)
+    const decoded = decodeToken(token)
+
+    response.status(200).json(decoded)
   } catch (error) {
     next(error)
   }
@@ -42,22 +58,42 @@ const postLogout = async (
 ) => {
   try {
     response.clearCookie("token")
-    response.status(200).json()
+    response.status(200).json({
+      message: "Logged out successfully",
+    })
   } catch (error) {
     next(error)
   }
 }
 
-const getMe = async (
-  _request: TRequest,
+const postSignup = async (
+  request: TRequest<{
+    reqBody: TCredentialsDto
+  }>,
   response: TResponse,
   next: NextFunction
 ) => {
   try {
-    response.status(200).json()
+    const user = await authService.signup(request.body)
+
+    if (!("id" in user)) {
+      throw new Error("Failed to assign token")
+    }
+
+    const token = createSessionToken(user.id)
+
+    response.cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: true,
+    })
+
+    const decoded = decodeToken(token)
+
+    response.status(200).json(decoded)
   } catch (error) {
     next(error)
   }
 }
 
-export default { getMe, login, postLogout }
+export default { getPerson, postLogin, postLogout, postSignup }

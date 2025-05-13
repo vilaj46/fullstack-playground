@@ -3,4 +3,10 @@ type TCredentialsDto = {
   username: string
 }
 
-export type { TCredentialsDto }
+type TPersonResponse = {
+  userId: number
+  iat: number
+  exp: number
+}
+
+export type { TCredentialsDto, TPersonResponse }

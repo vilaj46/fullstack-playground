@@ -28,10 +28,6 @@ async function seedDatabase() {
     `
 
     await sql`
-      INSERT INTO person (username, password) VALUES
-      ('julian', 'vila')
-    `
-    await sql`
       INSERT INTO todo (task, completed) VALUES
       ('Finish Docker setup', FALSE),
       ('Write seed script', TRUE),

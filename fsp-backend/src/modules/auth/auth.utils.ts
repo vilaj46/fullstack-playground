@@ -1,12 +1,39 @@
+import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
+
+const comparePasswords = async (password: string, hash: string) => {
+  return await bcrypt.compare(password, hash)
+}
 
 const createSessionToken = (personId: number) => {
   if (!process.env.SECRET_KEY) {
     throw new Error("Invalid secret key")
   }
+
   return jwt.sign({ userId: personId }, process.env.SECRET_KEY, {
     expiresIn: "30m",
   })
 }
 
-export { createSessionToken }
+const decodeToken = (token?: string) => {
+  if (!token) {
+    throw new Error("Invalid token")
+  }
+
+  return jwt.decode(token, {
+    json: true,
+  })
+}
+
+const hashPassword = async (password: string) => {
+  const saltRounds = 10
+
+  try {
+    const hashedPassword = await bcrypt.hash(password, saltRounds)
+    return hashedPassword
+  } catch (error) {
+    throw new Error(`Error hashing password: ${error}`)
+  }
+}
+
+export { comparePasswords, createSessionToken, decodeToken, hashPassword }

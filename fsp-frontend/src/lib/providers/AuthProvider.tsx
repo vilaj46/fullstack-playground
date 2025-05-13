@@ -1,94 +1,52 @@
 import type { ReactNode } from "react"
 import { createContext, useContext } from "react"
-import { usePathname } from "next/navigation"
 
-import { useGetMe, usePostLogout } from "@/lib/modules/auth/authHooks"
+import { useGetPerson } from "@/lib/modules/auth/authHooks"
 
 type Props = {
   children: ReactNode
 }
 
-type Value = {
+type TAuthContext = {
+  handleLogin: () => void
+  handleLogout: () => void
   isAuthenticated: boolean
-  login: () => void
+  isLoading: boolean
+  refetch: () => void
 }
 
-const AuthContext = createContext<Value>({
-  isAuthenticated: false,
-  login: () => undefined,
-})
+const AuthContext = createContext<TAuthContext | undefined>(undefined)
 
 const AuthProvider = (props: Props) => {
-  const pathname = usePathname()
-  const isProtectedRoute = pathname.includes("admin")
-
-  const meQueryResult = useGetMe({
-    enabled: isProtectedRoute,
+  const { isLoading, isPending, isSuccess, refetch } = useGetPerson({
+    enabled: false,
   })
 
-  const login = () => {
-    if (!isProtectedRoute) {
-      return
-    }
+  const handleLogin = () => refetch()
 
-    meQueryResult.refetch()
-  }
+  const handleLogout = () => undefined
 
-  if (!isProtectedRoute) {
-    return props.children
-  }
-
-  if (meQueryResult.isPending) {
-    return "Loading..."
+  const value = {
+    handleLogin,
+    handleLogout,
+    isAuthenticated: isSuccess,
+    isLoading: isLoading || isPending,
+    refetch,
   }
 
   return (
-    <AuthContext.Provider
-      value={{
-        isAuthenticated: meQueryResult.isSuccess,
-        login,
-      }}
-    >
-      <AuthenticatedNavigation />
-      {props.children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={value}>{props.children}</AuthContext.Provider>
   )
 }
 
-export const useAuthProvider = () => {
+export const useAuth = () => {
   const context = useContext(AuthContext)
 
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider")
+  }
+
   return context
-}
-
-function AuthenticatedNavigation() {
-  const { isAuthenticated } = useAuthProvider()
-
-  const logoutMutation = usePostLogout({
-    onSuccess: () => window.location.reload(),
-  })
-
-  const onLogout = () => {
-    if (!isAuthenticated) {
-      return
-    }
-
-    logoutMutation.mutate()
-  }
-
-  if (!isAuthenticated) {
-    return null
-  }
-
-  return (
-    <nav className="bg-gray-100 border-b-2 border-gray-800 shadow-md">
-      <ul className="flex gap-4 px-4 py-2 text-lg font-medium text-gray-800">
-        <button className="hover:cursor-pointer" onClick={onLogout}>
-          Logout
-        </button>
-      </ul>
-    </nav>
-  )
 }
 
 export default AuthProvider
