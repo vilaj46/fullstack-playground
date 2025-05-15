@@ -1,19 +1,42 @@
-import { NextFunction, Request, Response } from "express"
+import { NextFunction } from "express"
 
 import { TTodo } from "@/shared/types"
 
 import { TRequest, TResponse } from "@/types"
 
+import { getPersonIdFromToken } from "@/modules/auth/auth.utils"
 import todoService from "@/modules/todo/todo.service"
+import { getLimitAndOffset } from "@/utils/request-utils"
 
 const getAllTodos = async (
-  _request: TRequest,
+  request: TRequest<{
+    reqQuery?: {
+      limit?: string
+      offset?: string
+      paginated?: string
+    }
+  }>,
   response: TResponse,
   next: NextFunction
 ) => {
   try {
-    const todos = await todoService.getAllTodos()
-    response.status(200).json(todos)
+    const query = getLimitAndOffset(request.query)
+
+    const personId = getPersonIdFromToken(request.cookies?.token)
+    if (!query) {
+      const todos = await todoService.getAllTodos(personId)
+      response.status(200).json(todos)
+    } else {
+      const todos = await todoService.getTodosByLimitAndOffset(personId, query)
+
+      console.log("heyyy")
+
+      if (request.query && "paginated" in request?.query) {
+        response.status(200).json(todos)
+      } else {
+        response.status(200).json(todos.data)
+      }
+    }
   } catch (error) {
     next(error)
   }
@@ -29,8 +52,9 @@ const createTodo = async (
   next: NextFunction
 ) => {
   try {
+    const personId = getPersonIdFromToken(request.cookies?.token)
     const { task } = request.body
-    const todo = await todoService.createTodo(task)
+    const todo = await todoService.createTodo(personId, task)
     response.status(200).json({ result: todo })
   } catch (error) {
     next(error)

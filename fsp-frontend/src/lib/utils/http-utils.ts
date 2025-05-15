@@ -24,7 +24,7 @@ const request = async <Response, Data = undefined, Errors = undefined>(
       axios.isAxiosError(err) && err.response?.data.errors
         ? err.response?.data.errors.message
         : "Unknown error"
-    throw new ApiError<Errors>({ message, ...errors, testing: "string" })
+    throw new ApiError<Errors>({ message, ...errors })
   }
 }
 

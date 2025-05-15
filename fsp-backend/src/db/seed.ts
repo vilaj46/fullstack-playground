@@ -1,5 +1,7 @@
 import "dotenv/config"
 
+import { hashPassword } from "../modules/auth/auth.utils"
+import mocks from "./mocks"
 import sql from "./index"
 
 async function seedDatabase() {
@@ -23,16 +25,45 @@ async function seedDatabase() {
       CREATE TABLE IF NOT EXISTS todo (
         id SERIAL PRIMARY KEY,
         task TEXT NOT NULL,
-        completed BOOLEAN DEFAULT FALSE
+        completed BOOLEAN DEFAULT FALSE,
+        person_id INTEGER REFERENCES person(id) ON DELETE CASCADE
       );
     `
 
-    await sql`
-      INSERT INTO todo (task, completed) VALUES
-      ('Finish Docker setup', FALSE),
-      ('Write seed script', TRUE),
-      ('Test backend integration', FALSE);
+    const username = "julian"
+    const password = await hashPassword("vila")
+
+    const username2 = "test"
+    const password2 = await hashPassword("test")
+
+    const [person] = await sql`
+      INSERT INTO person (username, password) VALUES
+      (${username}, ${password}),
+      (${username2}, ${password2})
+      RETURNING *;
     `
+
+    const personId = person.id
+
+    await sql`
+      INSERT INTO todo (task, completed, person_id) VALUES
+      ('Pagination - limit / offset', FALSE, ${personId}),
+      ('Search / filter todos by status or date', TRUE, ${personId}),
+      ('Activity logging / track updates', FALSE, ${personId}),
+      ('File uploads', FALSE, ${personId}),
+      ('Redis', FALSE, ${personId}),
+      ('WebSockets', FALSE, ${personId});
+    `
+
+    for (let i = 0; i < 1000; i++) {
+      const randomIndex = Math.floor(Math.random() * mocks.todos.length)
+      const todo = mocks.todos[randomIndex]
+
+      await sql`
+        INSERT INTO todo (task, completed, person_id) VALUES
+        (${todo}, FALSE, ${personId});
+      `
+    }
 
     console.log("Database seeded successfully!")
   } catch (error) {

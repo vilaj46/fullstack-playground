@@ -2,18 +2,46 @@ import { TTodo } from "@/shared/types"
 
 import sql from "@/db"
 
-const getAllTodos = async () => {
+const getAllTodos = async (personId: number) => {
   try {
-    return await sql`SELECT * FROM todo ORDER BY id DESC;`
+    return await sql`SELECT * FROM todo WHERE person_id = ${personId} ORDER BY id DESC;`
   } catch {
     throw new Error("Failed to fetch todos")
   }
 }
 
-const createTodo = async (task: TTodo["task"]) => {
+const getTodosByLimitAndOffset = async (
+  personId: number,
+  query: {
+    limit: number
+    offset: number
+  }
+) => {
+  try {
+    const { limit, offset } = query
+    return sql`SELECT * FROM todo WHERE person_id = ${personId} ORDER BY id ASC LIMIT ${limit} OFFSET ${offset};`
+  } catch (error) {
+    throw new Error(`Failed to fetch todos with limit and offset: ${error}`)
+  }
+}
+
+const getTodosCount = async (personId: number) => {
+  try {
+    const [{ count }] = await sql`
+      SELECT COUNT(*)::int AS count 
+      FROM todo 
+      WHERE person_id = ${personId};
+    `
+    return count
+  } catch (error) {
+    throw new Error(`Failed to fetch todos count: ${error}`)
+  }
+}
+
+const createTodo = async (personId: number, task: TTodo["task"]) => {
   try {
     const [todo] = await sql`
-      INSERT INTO todo (task) VALUES (${task})
+      INSERT INTO todo (task, person_id) VALUES (${task}, ${personId})
       RETURNING *;
     `
 
@@ -62,4 +90,11 @@ const toggleTodo = async (id: TTodo["id"]) => {
   }
 }
 
-export default { getAllTodos, createTodo, deleteTodo, toggleTodo }
+export default {
+  getAllTodos,
+  getTodosByLimitAndOffset,
+  getTodosCount,
+  createTodo,
+  deleteTodo,
+  toggleTodo,
+}

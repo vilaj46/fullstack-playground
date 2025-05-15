@@ -14,6 +14,7 @@ const ReactQueryProvider = (props: Props) => {
           queries: {
             refetchOnWindowFocus: false,
             retry: false,
+            staleTime: Infinity,
           },
         },
       })

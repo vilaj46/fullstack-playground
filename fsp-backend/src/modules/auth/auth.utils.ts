@@ -10,7 +10,7 @@ const createSessionToken = (personId: number) => {
     throw new Error("Invalid secret key")
   }
 
-  return jwt.sign({ userId: personId }, process.env.SECRET_KEY, {
+  return jwt.sign({ personId }, process.env.SECRET_KEY, {
     expiresIn: "30m",
   })
 }
@@ -25,6 +25,20 @@ const decodeToken = (token?: string) => {
   })
 }
 
+const getPersonIdFromToken = (token: string): number => {
+  const decodedToken = decodeToken(token)
+
+  if (!decodedToken) {
+    throw new Error("Invalid token")
+  }
+
+  if (!("personId" in decodedToken)) {
+    throw new Error("User does not exist")
+  }
+
+  return decodedToken.personId
+}
+
 const hashPassword = async (password: string) => {
   const saltRounds = 10
 
@@ -36,4 +50,10 @@ const hashPassword = async (password: string) => {
   }
 }
 
-export { comparePasswords, createSessionToken, decodeToken, hashPassword }
+export {
+  comparePasswords,
+  createSessionToken,
+  decodeToken,
+  getPersonIdFromToken,
+  hashPassword,
+}

@@ -22,7 +22,7 @@ const routeObj = {
   TODO: createRoute("Todo", "/csr/todos"),
   MODULE: createRoute("Module", "/module", [
     createRoute("Blog", "/blog"),
-    createRoute("Todo", "/csr/todos"),
+    // createRoute("Todo", "/csr/todos"),
   ]),
 }
 

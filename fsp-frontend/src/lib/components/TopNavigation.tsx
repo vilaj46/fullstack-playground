@@ -8,7 +8,10 @@ type Props = {
 
 export default function TopNavigation(props: Props) {
   return (
-    <nav className="border-b-4 border-gray-800 bg-blue-400 p-2 shadow-xl text-gray-900">
+    <nav
+      className="border-b-4 border-gray-800 bg-blue-400 p-2 shadow-xl text-gray-900"
+      id="top-navigation"
+    >
       <ul className="flex font-bold gap-4 text-xl">
         {props.routes.map((route) => (
           <li key={route.href} className="flex relative group">

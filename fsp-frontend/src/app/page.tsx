@@ -3,7 +3,7 @@ import Link from "next/link"
 import routes from "@/lib/constants"
 
 const Home = () => {
-  const homePageModules = [routes.BLOG, routes.TODO]
+  const homePageModules = [routes.BLOG]
 
   return (
     <main className="bg-gray-100 flex flex-col flex-grow font-mono items-center p-10 text-gray-900">

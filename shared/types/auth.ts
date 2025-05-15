@@ -4,7 +4,7 @@ type TCredentialsDto = {
 }
 
 type TPersonResponse = {
-  userId: number
+  personId: number
   iat: number
   exp: number
 }

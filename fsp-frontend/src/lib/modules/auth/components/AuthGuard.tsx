@@ -15,7 +15,8 @@ type Props = {
 const AuthGuard = (props: Props) => {
   const hasRefetched = useRef(false)
   const pathname = usePathname()
-  const isProtected = pathname?.startsWith("/csr/admin/dashboard")
+  const protectedRoutes = ["/csr/admin/dashboard", "/csr/todos"]
+  const isProtected = protectedRoutes.includes(pathname)
   const isRedirectPage = pathname?.startsWith("/csr/admin")
 
   const { isAuthenticated, isLoading, refetch } = useAuth()
@@ -45,7 +46,7 @@ const AuthGuard = (props: Props) => {
 
   return (
     <>
-      <AuthenticatedNavigation />
+      {/* <AuthenticatedNavigation /> */}
       {props.children}
     </>
   )

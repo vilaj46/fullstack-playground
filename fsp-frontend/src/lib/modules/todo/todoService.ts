@@ -7,7 +7,20 @@ import {
   postRequest,
 } from "@/lib/utils/http-utils"
 
-const getAllTodos = async () => await getRequest<Array<TTodo>>("/todos")
+const getTodos = async () => await getRequest<Array<TTodo>>("/todos")
+
+const getInfiniteTodos = async (params: { limit: number; offset: number }) =>
+  await getRequest<Array<TTodo>>(
+    `/todos?limit=${params.limit}&offset=${params.offset}`
+  )
+
+const getOffsetTodos = async (params: { limit: number; offset: number }) =>
+  await getRequest<{
+    data: Array<TTodo>
+    pagination: {
+      totalPages: number
+    }
+  }>(`/todos?paginated=true&limit=${params.limit}&offset=${params.offset}`)
 
 const createTodo = async (task: TTodo["task"]) =>
   await postRequest<
@@ -23,4 +36,11 @@ const deleteTodo = async (id: TTodo["id"]) =>
 const toggleTodo = async (id: TTodo["id"]) =>
   await patchRequest<TTodo>(`/todos/${id}`)
 
-export { getAllTodos, createTodo, deleteTodo, toggleTodo }
+export {
+  getTodos,
+  getInfiniteTodos,
+  getOffsetTodos,
+  createTodo,
+  deleteTodo,
+  toggleTodo,
+}

@@ -1,8 +1,15 @@
 import {
+  useInfiniteQuery,
   useMutation,
   useQuery,
   useQueryClient,
+  type InfiniteData,
+  type QueryKey,
+  type QueryOptions,
+  type UndefinedInitialDataInfiniteOptions,
+  type UseInfiniteQueryOptions,
   type UseMutationOptions,
+  type UseQueryOptions,
 } from "@tanstack/react-query"
 
 import type { TTodo } from "@/shared/types"
@@ -10,18 +17,73 @@ import type { TTodo } from "@/shared/types"
 import {
   createTodo,
   deleteTodo,
-  getAllTodos,
+  getInfiniteTodos,
+  getOffsetTodos,
+  getTodos,
   toggleTodo,
 } from "@/lib/modules/todo/todoService"
 
 const queryKeys = {
   all: ["todos"],
+  infinite: ["infinite", "todos"],
+  offset: (params: { limit: number; offset: number }) => [
+    ...queryKeys.all,
+    params.limit,
+    params.offset,
+  ],
 }
 
-const useGetAllTodos = () =>
+const useGetAllTodos = (options?: Partial<UseQueryOptions<Array<TTodo>>>) =>
   useQuery({
-    queryFn: getAllTodos,
+    ...options,
+    queryFn: getTodos,
     queryKey: queryKeys.all,
+  })
+
+const useGetInfiniteTodos = (
+  limit: number,
+  options?: Partial<
+    UndefinedInitialDataInfiniteOptions<
+      TTodo[],
+      Error,
+      InfiniteData<TTodo[], unknown>,
+      string[],
+      number
+    >
+  >
+) =>
+  useInfiniteQuery({
+    ...options,
+    queryKey: queryKeys.infinite,
+    queryFn: ({ pageParam = 0 }) =>
+      getInfiniteTodos({
+        limit,
+        offset: pageParam,
+      }),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, pages) => {
+      const lastPageLength = lastPage?.length ?? 0
+      const pagesLength = pages?.length ?? 0
+
+      return lastPageLength === limit ? pagesLength * limit : undefined
+    },
+  })
+
+const useGetOffsetTodos = (
+  params: { limit: number; offset: number },
+  options?: Partial<
+    UseQueryOptions<{
+      data: Array<TTodo>
+      pagination: {
+        totalPages: number
+      }
+    }>
+  >
+) =>
+  useQuery({
+    ...options,
+    queryKey: queryKeys.offset(params),
+    queryFn: () => getOffsetTodos(params),
   })
 
 const usePostTodo = (options?: UseMutationOptions) => {
@@ -67,4 +129,11 @@ const useToggleTodo = () => {
   })
 }
 
-export { useGetAllTodos, usePostTodo, useDeleteTodo, useToggleTodo }
+export {
+  useGetAllTodos,
+  useGetInfiniteTodos,
+  useGetOffsetTodos,
+  usePostTodo,
+  useDeleteTodo,
+  useToggleTodo,
+}
