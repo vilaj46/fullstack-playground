@@ -4,6 +4,7 @@ import { useState } from "react"
 
 import AuthenticatedSidebar from "@/lib/modules/auth/components/AuthenticatedSidebar"
 import Todos from "@/app/csr/todos/page"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
 export const MODULES = {
   DASHBOARD: "DASHBOARD",
@@ -13,10 +14,32 @@ export const MODULES = {
 
 export type TModule = (typeof MODULES)[keyof typeof MODULES]
 
-const AdminDashboard = () => {
-  const [module, setModule] = useState<TModule>(MODULES.DASHBOARD)
+const isValidModuleKey = (key: string): key is keyof typeof MODULES =>
+  key in MODULES
 
-  const handleModuleSelect = (module: TModule) => setModule(module)
+const AdminDashboard = () => {
+  const pathname = usePathname()
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [module, setModule] = useState<TModule>(() => {
+    const initialModule = searchParams.get("module")?.toUpperCase()
+
+    if (!initialModule) {
+      return MODULES.DASHBOARD
+    }
+
+    if (isValidModuleKey(initialModule)) {
+      return MODULES[initialModule]
+    }
+
+    return MODULES.DASHBOARD
+  })
+
+  const handleModuleSelect = (module: TModule) => {
+    setModule(module)
+    const moduleParam = module.toLowerCase()
+    router.push(`${pathname}?module=${moduleParam}`)
+  }
 
   return (
     <main className="flex">

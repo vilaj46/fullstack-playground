@@ -4,10 +4,7 @@ import {
   useQuery,
   useQueryClient,
   type InfiniteData,
-  type QueryKey,
-  type QueryOptions,
   type UndefinedInitialDataInfiniteOptions,
-  type UseInfiniteQueryOptions,
   type UseMutationOptions,
   type UseQueryOptions,
 } from "@tanstack/react-query"
@@ -22,6 +19,7 @@ import {
   getTodos,
   toggleTodo,
 } from "@/lib/modules/todo/todoService"
+import type ApiError from "@/shared/classes/ApiError"
 
 const queryKeys = {
   all: ["todos"],
@@ -72,12 +70,15 @@ const useGetInfiniteTodos = (
 const useGetOffsetTodos = (
   params: { limit: number; offset: number },
   options?: Partial<
-    UseQueryOptions<{
-      data: Array<TTodo>
-      pagination: {
-        totalPages: number
-      }
-    }>
+    UseQueryOptions<
+      {
+        data: Array<TTodo>
+        pagination: {
+          totalPages: number
+        }
+      },
+      ApiError
+    >
   >
 ) =>
   useQuery({

@@ -1,7 +1,9 @@
 import axios from "axios"
 import type { AxiosRequestConfig, AxiosResponse } from "axios"
 
-import ApiError from "@/lib/classes"
+import ApiError from "@/shared/classes/ApiError"
+import type { TStatusCode } from "@/shared/types"
+import { isValidStatusCode } from "@/shared/utils"
 
 const request = async <Response, Data = undefined, Errors = undefined>(
   config: AxiosRequestConfig<Data>
@@ -14,17 +16,28 @@ const request = async <Response, Data = undefined, Errors = undefined>(
     })
 
     return response.data
-  } catch (err) {
+  } catch (error) {
+    // HandleError function
     const errors =
-      axios.isAxiosError(err) && "errors" in err.response?.data
-        ? err.response?.data.errors
+      axios.isAxiosError(error) && "errors" in error.response?.data
+        ? error.response?.data.errors
         : {}
 
     const message: string =
-      axios.isAxiosError(err) && err.response?.data.errors
-        ? err.response?.data.errors.message
+      axios.isAxiosError(error) && error.response?.data.errors
+        ? error.response?.data.errors.message
         : "Unknown error"
-    throw new ApiError<Errors>({ message, ...errors })
+
+    const statusCode =
+      axios.isAxiosError(error) && error.status ? error.status : 500
+
+    throw new ApiError<Errors>(
+      isValidStatusCode(statusCode) ? statusCode : 500,
+      {
+        message,
+        ...errors,
+      }
+    )
   }
 }
 

@@ -29,8 +29,6 @@ const getAllTodos = async (
     } else {
       const todos = await todoService.getTodosByLimitAndOffset(personId, query)
 
-      console.log("heyyy")
-
       if (request.query && "paginated" in request?.query) {
         response.status(200).json(todos)
       } else {

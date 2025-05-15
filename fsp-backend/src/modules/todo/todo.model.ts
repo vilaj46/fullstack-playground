@@ -2,6 +2,8 @@ import { TTodo } from "@/shared/types"
 
 import sql from "@/db"
 
+import ApiError from "@/shared/classes/ApiError"
+
 const getAllTodos = async (personId: number) => {
   try {
     return await sql`SELECT * FROM todo WHERE person_id = ${personId} ORDER BY id DESC;`
@@ -34,7 +36,9 @@ const getTodosCount = async (personId: number) => {
     `
     return count
   } catch (error) {
-    throw new Error(`Failed to fetch todos count: ${error}`)
+    throw new ApiError(400, {
+      message: `Failed to fetch todos count: ${error}`,
+    })
   }
 }
 

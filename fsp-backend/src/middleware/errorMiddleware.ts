@@ -1,22 +1,21 @@
 import { NextFunction, Request, Response } from "express"
 
-type CustomError = {
-  status?: number
-} & Error
+import ApiError from "@/shared/classes/ApiError"
 
 const errorMiddleware = (
-  error: CustomError,
+  error: ApiError<Record<string, unknown>>,
   _request: Request,
   response: Response,
   _next: NextFunction
 ) => {
   const message = error.message || "Internal Server Error"
-  const status = error.status ?? 500
+  const status = error?.statusCode ?? 500
 
   response.status(status).json({
     status: "error",
     errors: {
       message,
+      ...error.errors,
     },
   })
 }
