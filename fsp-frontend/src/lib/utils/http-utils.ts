@@ -2,7 +2,6 @@ import axios from "axios"
 import type { AxiosRequestConfig, AxiosResponse } from "axios"
 
 import ApiError from "@/shared/classes/ApiError"
-import type { TStatusCode } from "@/shared/types"
 import { isValidStatusCode } from "@/shared/utils"
 
 const request = async <Response, Data = undefined, Errors = undefined>(

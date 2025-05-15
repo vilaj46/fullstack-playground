@@ -1,4 +1,4 @@
-import { TStatusCode } from "../types"
+import type { TStatusCode } from "../types"
 
 import { statusCodes } from "../constants"
 

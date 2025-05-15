@@ -15,7 +15,7 @@ const getPaginationRange = (current: number, total: number, delta = 1) => {
     }
   }
 
-  for (let i of range) {
+  for (const i of range) {
     if (lastPage !== null) {
       if (i - lastPage === 2) {
         rangeWithDots.push(lastPage + 1)

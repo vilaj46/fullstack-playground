@@ -6,16 +6,8 @@ import AuthenticatedSidebar from "@/lib/modules/auth/components/AuthenticatedSid
 import Todos from "@/app/csr/todos/page"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
-export const MODULES = {
-  DASHBOARD: "DASHBOARD",
-  PERSON: "PERSON",
-  TODO: "TODO",
-} as const
-
-export type TModule = (typeof MODULES)[keyof typeof MODULES]
-
-const isValidModuleKey = (key: string): key is keyof typeof MODULES =>
-  key in MODULES
+import { MODULES } from "./constants"
+import type { TModule } from "./constants"
 
 const AdminDashboard = () => {
   const pathname = usePathname()
@@ -29,7 +21,7 @@ const AdminDashboard = () => {
     }
 
     if (isValidModuleKey(initialModule)) {
-      return MODULES[initialModule]
+      return MODULES["PERSON"]
     }
 
     return MODULES.DASHBOARD
@@ -39,6 +31,10 @@ const AdminDashboard = () => {
     setModule(module)
     const moduleParam = module.toLowerCase()
     router.push(`${pathname}?module=${moduleParam}`)
+  }
+
+  function isValidModuleKey(key: string): key is keyof typeof MODULES {
+    return key in MODULES
   }
 
   return (

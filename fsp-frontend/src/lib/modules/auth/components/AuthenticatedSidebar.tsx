@@ -1,9 +1,9 @@
-import type { TModule } from "@/app/csr/admin/dashboard/page"
-
-import { MODULES } from "@/app/csr/admin/dashboard/page"
 import { usePostLogout } from "@/lib/modules/auth/authHooks"
 import { useAuth } from "@/lib/providers/AuthProvider"
 import { useRouter } from "next/navigation"
+
+import { MODULES } from "@/app/csr/admin/dashboard/constants"
+import type { TModule } from "@/app/csr/admin/dashboard/constants"
 
 type Props = {
   onModuleSelect: (module: TModule) => void

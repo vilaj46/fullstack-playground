@@ -6,8 +6,6 @@ import { usePathname } from "next/navigation"
 
 import { useAuth } from "@/lib/providers/AuthProvider"
 
-import AuthenticatedNavigation from "@/lib/modules/auth/components/AuthenticatedNavigation"
-
 type Props = {
   children: ReactNode
 }
@@ -30,7 +28,7 @@ const AuthGuard = (props: Props) => {
       refetch()
       hasRefetched.current = true
     }
-  }, [isAuthenticated, isProtected, refetch])
+  }, [isAuthenticated, isProtected, isRedirectPage, refetch])
 
   if (!isProtected) {
     return props.children
