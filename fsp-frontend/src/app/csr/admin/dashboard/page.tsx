@@ -21,7 +21,7 @@ const AdminDashboard = () => {
     }
 
     if (isValidModuleKey(initialModule)) {
-      return MODULES["PERSON"]
+      return MODULES[initialModule]
     }
 
     return MODULES.DASHBOARD

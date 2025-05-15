@@ -1,25 +1,22 @@
+import { useState } from "react"
+import type {
+  InfiniteData,
+  UndefinedInitialDataInfiniteOptions,
+  UseMutationOptions,
+  UseQueryOptions,
+} from "@tanstack/react-query"
 import {
   useInfiniteQuery,
   useMutation,
   useQuery,
   useQueryClient,
-  type InfiniteData,
-  type UndefinedInitialDataInfiniteOptions,
-  type UseMutationOptions,
-  type UseQueryOptions,
 } from "@tanstack/react-query"
 
-import type { TTodo } from "@/shared/types"
+import type { TLimitAndOffset, TTodo } from "@/shared/types"
 
-import {
-  createTodo,
-  deleteTodo,
-  getInfiniteTodos,
-  getOffsetTodos,
-  getTodos,
-  toggleTodo,
-} from "@/lib/modules/todo/todoService"
-import type ApiError from "@/shared/classes/ApiError"
+import ApiError from "@/shared/classes"
+
+import todoService from "@/lib/modules/todo/todoService"
 
 const queryKeys = {
   all: ["todos"],
@@ -34,7 +31,7 @@ const queryKeys = {
 const useGetAllTodos = (options?: Partial<UseQueryOptions<Array<TTodo>>>) =>
   useQuery({
     ...options,
-    queryFn: getTodos,
+    queryFn: todoService.getTodos,
     queryKey: queryKeys.all,
   })
 
@@ -54,7 +51,7 @@ const useGetInfiniteTodos = (
     ...options,
     queryKey: queryKeys.infinite,
     queryFn: ({ pageParam = 0 }) =>
-      getInfiniteTodos({
+      todoService.getInfiniteTodos({
         limit,
         offset: pageParam,
       }),
@@ -68,7 +65,7 @@ const useGetInfiniteTodos = (
   })
 
 const useGetOffsetTodos = (
-  params: { limit: number; offset: number },
+  params: TLimitAndOffset,
   options?: Partial<
     UseQueryOptions<
       {
@@ -84,14 +81,14 @@ const useGetOffsetTodos = (
   useQuery({
     ...options,
     queryKey: queryKeys.offset(params),
-    queryFn: () => getOffsetTodos(params),
+    queryFn: () => todoService.getOffsetTodos(params),
   })
 
 const usePostTodo = (options?: UseMutationOptions) => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: createTodo,
+    mutationFn: todoService.createTodo,
     onSuccess: (data, _variables, context) => {
       if (options?.onSuccess) {
         options.onSuccess(data, undefined, context)
@@ -108,7 +105,7 @@ const useDeleteTodo = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (id: TTodo["id"]) => deleteTodo(id),
+    mutationFn: (id: TTodo["id"]) => todoService.deleteTodo(id),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.all,
@@ -121,7 +118,7 @@ const useToggleTodo = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (id: TTodo["id"]) => toggleTodo(id),
+    mutationFn: (id: TTodo["id"]) => todoService.toggleTodo(id),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.all,
@@ -130,11 +127,58 @@ const useToggleTodo = () => {
   })
 }
 
+const useTodos = (config: {
+  currentPage: number
+  onPostSuccess: () => void
+}) => {
+  const LIMIT: number = 100
+  const IS_INFINITE_QUERY: boolean = false
+
+  const todosQueryResult = useGetOffsetTodos(
+    {
+      limit: LIMIT,
+      offset: LIMIT * (config.currentPage - 1),
+    },
+    {
+      enabled: !IS_INFINITE_QUERY,
+    }
+  )
+
+  const todosInfiniteQueryResult = useGetInfiniteTodos(LIMIT, {
+    enabled: IS_INFINITE_QUERY,
+  })
+  const postTodoMutation = usePostTodo({
+    onSuccess: config.onPostSuccess,
+  })
+  const deleteTodoMutation = useDeleteTodo()
+  const toggleTodoMutation = useToggleTodo()
+
+  const isTodosQueryPending = !IS_INFINITE_QUERY && todosQueryResult.isPending
+  const isTodosInfinitePending =
+    IS_INFINITE_QUERY && todosInfiniteQueryResult.isPending
+
+  return {
+    errorMessage: `An error has occurered: ${
+      IS_INFINITE_QUERY
+        ? todosInfiniteQueryResult.error?.message
+        : todosQueryResult.error?.message
+    }`,
+    handleCreateTodo: postTodoMutation.mutate,
+    handleDeleteTodo: deleteTodoMutation.mutate,
+    handleToggleTodo: toggleTodoMutation.mutate,
+    isError: todosQueryResult.isError || todosInfiniteQueryResult.isError,
+    isLoading: isTodosInfinitePending || isTodosQueryPending,
+    todosInfiniteQueryResult,
+    todosQueryResult,
+  }
+}
+
 export {
   useGetAllTodos,
   useGetInfiniteTodos,
   useGetOffsetTodos,
   usePostTodo,
   useDeleteTodo,
+  useTodos,
   useToggleTodo,
 }

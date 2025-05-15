@@ -4,13 +4,8 @@ import { useState } from "react"
 
 import type { TTodo } from "@/shared/types"
 
-import {
-  useDeleteTodo,
-  useGetInfiniteTodos,
-  useGetOffsetTodos,
-  usePostTodo,
-  useToggleTodo,
-} from "@/lib/modules/todo/todoHooks"
+import { useTodos } from "@/lib/modules/todo/todoHooks"
+
 import Pagination from "@/lib/components/Pagination"
 
 const Todos = () => {
@@ -19,52 +14,38 @@ const Todos = () => {
   const isInfiniteQuery: boolean = false
 
   const [task, setTask] = useState("")
-  const todosQueryResult = useGetOffsetTodos(
-    {
-      limit: LIMIT,
-      offset: LIMIT * (currentPage - 1),
-    },
-    {
-      enabled: !isInfiniteQuery,
-    }
-  )
-  const todosInfiniteQueryResult = useGetInfiniteTodos(LIMIT, {
-    enabled: isInfiniteQuery,
+  const {
+    errorMessage,
+    handleCreateTodo,
+    handleDeleteTodo,
+    handleToggleTodo,
+    isError,
+    isLoading,
+    todosInfiniteQueryResult,
+    todosQueryResult,
+  } = useTodos({
+    currentPage,
+    onPostSuccess: () => setTask(""),
   })
-  const postTodoMutation = usePostTodo({
-    onSuccess: () => setTask(""),
-  })
-  const deleteTodoMutation = useDeleteTodo()
-  const toggleTodoMutation = useToggleTodo()
 
   const addTodo = () => {
     if (!task.trim()) {
       return
     }
 
-    postTodoMutation.mutate(task)
+    handleCreateTodo(task)
   }
 
-  const toggleComplete = (id: TTodo["id"]) => {
-    toggleTodoMutation.mutate(id)
+  const toggleComplete = (id: TTodo["id"]) => handleToggleTodo(id)
+
+  const deleteTodo = (id: TTodo["id"]) => handleDeleteTodo(id)
+
+  if (isLoading) {
+    return <div>Loading...</div>
   }
 
-  const deleteTodo = (id: TTodo["id"]) => {
-    deleteTodoMutation.mutate(id)
-  }
-
-  const isTodosQueryPending = !isInfiniteQuery && todosQueryResult.isPending
-  const isTodosInfinitePending =
-    isInfiniteQuery && todosInfiniteQueryResult.isPending
-  if (isTodosQueryPending || isTodosInfinitePending) {
-    return "Loading..."
-  }
-
-  if (todosQueryResult.isError || todosInfiniteQueryResult.isError) {
-    if (isInfiniteQuery) {
-      return "An error has occurred: " + todosInfiniteQueryResult.error?.message
-    }
-    return "An error has occurred: " + todosQueryResult.error?.message
+  if (isError) {
+    return <div>{errorMessage}</div>
   }
 
   return (
@@ -140,7 +121,7 @@ const Todos = () => {
               console.log("nextPage", nextPage)
               setCurrentPage(nextPage)
             }}
-            totalPages={100}
+            totalPages={todosQueryResult.data?.pagination.totalPages ?? 0}
           />
           <ul className="mt-4">
             {todosQueryResult.data?.data.map((todo) => (

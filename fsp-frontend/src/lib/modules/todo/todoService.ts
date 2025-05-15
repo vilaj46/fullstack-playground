@@ -36,7 +36,7 @@ const deleteTodo = async (id: TTodo["id"]) =>
 const toggleTodo = async (id: TTodo["id"]) =>
   await patchRequest<TTodo>(`/todos/${id}`)
 
-export {
+export default {
   getTodos,
   getInfiniteTodos,
   getOffsetTodos,
