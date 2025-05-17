@@ -55,7 +55,7 @@ async function seedDatabase() {
       ('WebSockets', FALSE, ${personId});
     `
 
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < 2000; i++) {
       const randomIndex = Math.floor(Math.random() * mocks.todos.length)
       const todo = mocks.todos[randomIndex]
 

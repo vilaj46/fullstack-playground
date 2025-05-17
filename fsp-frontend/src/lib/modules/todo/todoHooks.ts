@@ -1,4 +1,3 @@
-import { useState } from "react"
 import type {
   InfiniteData,
   UndefinedInitialDataInfiniteOptions,
@@ -12,19 +11,20 @@ import {
   useQueryClient,
 } from "@tanstack/react-query"
 
-import type { TLimitAndOffset, TTodo } from "@/shared/types"
+import type { TGetTodosQueryParams, TTodo, TTodoSorting } from "@/shared/types"
 
-import ApiError from "@/shared/classes"
+import { ApiError } from "@/shared/classes"
 
 import todoService from "@/lib/modules/todo/todoService"
 
 const queryKeys = {
   all: ["todos"],
   infinite: ["infinite", "todos"],
-  offset: (params: { limit: number; offset: number }) => [
+  offset: (params: { limit: number; offset: number; filter: string }) => [
     ...queryKeys.all,
     params.limit,
     params.offset,
+    // params.filter,
   ],
 }
 
@@ -65,7 +65,7 @@ const useGetInfiniteTodos = (
   })
 
 const useGetOffsetTodos = (
-  params: TLimitAndOffset,
+  params: TGetTodosQueryParams,
   options?: Partial<
     UseQueryOptions<
       {
@@ -129,7 +129,9 @@ const useToggleTodo = () => {
 
 const useTodos = (config: {
   currentPage: number
+  filter: string
   onPostSuccess: () => void
+  sort: TTodoSorting
 }) => {
   const LIMIT: number = 100
   const IS_INFINITE_QUERY: boolean = false
@@ -138,6 +140,8 @@ const useTodos = (config: {
     {
       limit: LIMIT,
       offset: LIMIT * (config.currentPage - 1),
+      filter: config.filter,
+      sorting: config.sort,
     },
     {
       enabled: !IS_INFINITE_QUERY,
@@ -157,16 +161,31 @@ const useTodos = (config: {
   const isTodosInfinitePending =
     IS_INFINITE_QUERY && todosInfiniteQueryResult.isPending
 
+  const getTodos = (): Array<TTodo> => {
+    if (IS_INFINITE_QUERY) {
+      const pages = todosInfiniteQueryResult.data?.pages
+      return (
+        pages?.reduce((currentPage, accumulator) => {
+          return [...accumulator, ...currentPage]
+        }, []) ?? []
+      )
+    }
+
+    return todosQueryResult.data?.data ?? []
+  }
+
   return {
     errorMessage: `An error has occurered: ${
       IS_INFINITE_QUERY
         ? todosInfiniteQueryResult.error?.message
         : todosQueryResult.error?.message
     }`,
+    getTodos,
     handleCreateTodo: postTodoMutation.mutate,
     handleDeleteTodo: deleteTodoMutation.mutate,
     handleToggleTodo: toggleTodoMutation.mutate,
     isError: todosQueryResult.isError || todosInfiniteQueryResult.isError,
+    isInfiniteQuery: IS_INFINITE_QUERY,
     isLoading: isTodosInfinitePending || isTodosQueryPending,
     todosInfiniteQueryResult,
     todosQueryResult,

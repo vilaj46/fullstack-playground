@@ -1,4 +1,4 @@
-import { TTodo } from "@/shared/types"
+import { TGetTodosQueryParams, TTodo, TTodoSorting } from "@/shared/types"
 
 import sql from "@/db"
 
@@ -14,26 +14,49 @@ const getAllTodos = async (personId: number) => {
 
 const getTodosByLimitAndOffset = async (
   personId: number,
-  query: {
-    limit: number
-    offset: number
+  params?: {
+    filter?: string
+    limit?: string
+    offset?: string
+    paginated?: string
+    sorting?: string
   }
 ) => {
   try {
-    const { limit, offset } = query
-    return sql`SELECT * FROM todo WHERE person_id = ${personId} ORDER BY id ASC LIMIT ${limit} OFFSET ${offset};`
+    if (params?.filter?.length === 0 || !params?.filter) {
+      return sql`SELECT * FROM todo WHERE person_id = ${personId} ORDER BY id ASC LIMIT ${
+        params?.limit ?? 0
+      } OFFSET ${params?.offset ?? 0};`
+    }
+    return sql`SELECT * FROM todo 
+        WHERE person_id = ${personId} AND task ILIKE ${
+      "%" + params?.filter + "%"
+    }
+        ORDER BY id ASC LIMIT ${params?.limit ?? 0} OFFSET ${
+      params?.offset ?? 0
+    };`
   } catch (error) {
     throw new Error(`Failed to fetch todos with limit and offset: ${error}`)
   }
 }
 
-const getTodosCount = async (personId: number) => {
+const getTodosCount = async (personId: number, filter: string) => {
   try {
+    if (filter.length === 0) {
+      const [{ count }] = await sql`
+        SELECT COUNT(*)::int AS count 
+        FROM todo 
+        WHERE person_id = ${personId};
+      `
+      return count
+    }
+
     const [{ count }] = await sql`
       SELECT COUNT(*)::int AS count 
       FROM todo 
-      WHERE person_id = ${personId};
+      WHERE person_id = ${personId} AND task ILIKE ${"%" + filter + "%"};
     `
+
     return count
   } catch (error) {
     throw new ApiError(400, {

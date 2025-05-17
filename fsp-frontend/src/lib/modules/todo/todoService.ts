@@ -1,4 +1,8 @@
-import type { TTodo } from "@/shared/types"
+import type {
+  TGetTodosApiOffsetResponse,
+  TGetTodosQueryParams,
+  TTodo,
+} from "@/shared/types"
 
 import {
   deleteRequest,
@@ -6,6 +10,7 @@ import {
   patchRequest,
   postRequest,
 } from "@/lib/utils/http-utils"
+import { generateQueryParams } from "@/shared/utils"
 
 const getTodos = async () => await getRequest<Array<TTodo>>("/todos")
 
@@ -14,13 +19,13 @@ const getInfiniteTodos = async (params: { limit: number; offset: number }) =>
     `/todos?limit=${params.limit}&offset=${params.offset}`
   )
 
-const getOffsetTodos = async (params: { limit: number; offset: number }) =>
-  await getRequest<{
-    data: Array<TTodo>
-    pagination: {
-      totalPages: number
-    }
-  }>(`/todos?paginated=true&limit=${params.limit}&offset=${params.offset}`)
+const getOffsetTodos = async (params: TGetTodosQueryParams) => {
+  const query = generateQueryParams({
+    ...params,
+    paginated: true,
+  })
+  return await getRequest<TGetTodosApiOffsetResponse>(`/todos?${query}`)
+}
 
 const createTodo = async (task: TTodo["task"]) =>
   await postRequest<
@@ -36,7 +41,7 @@ const deleteTodo = async (id: TTodo["id"]) =>
 const toggleTodo = async (id: TTodo["id"]) =>
   await patchRequest<TTodo>(`/todos/${id}`)
 
-export default {
+const service = {
   getTodos,
   getInfiniteTodos,
   getOffsetTodos,
@@ -44,3 +49,5 @@ export default {
   deleteTodo,
   toggleTodo,
 }
+
+export default service
