@@ -6,6 +6,7 @@ import { TRequest, TResponse } from "@/types"
 
 import { getPersonIdFromToken } from "@/modules/auth/auth.utils"
 import todoService from "@/modules/todo/todo.service"
+
 const getAllTodos = async (
   request: TRequest<{
     reqQuery?: {

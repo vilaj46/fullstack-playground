@@ -83,7 +83,7 @@ const TodoForm = (props: TTodoFormProps) => {
         <option value={todoSorting.ID_ASC}>ID (Ascending)</option>
         <option value={todoSorting.ID_DESC}>ID (Descending)</option>
         <option value={todoSorting.ALPHA_ASC}>Alphabetical (A-Z)</option>
-        <option value={todoSorting.ALPHA_ASC}>Alphabetical (Z-A)</option>
+        <option value={todoSorting.ALPHA_DESC}>Alphabetical (Z-A)</option>
         <option value={todoSorting.COMPLETED_ASC}>
           Completed (False → True)
         </option>

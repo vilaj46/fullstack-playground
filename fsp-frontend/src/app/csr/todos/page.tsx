@@ -63,7 +63,9 @@ const Todos = () => {
         filterValue={filter}
         onAddTask={addTodo}
         onChangeFilter={(newFilter) => setFilter(newFilter)}
-        onChangeSort={(newSort: TTodoSorting) => setSort(newSort)}
+        onChangeSort={(newSort: TTodoSorting) => {
+          setSort(newSort)
+        }}
         onChangeTask={(task) => setTask(task)}
         onSearchFilter={() => todosQueryResult.refetch()}
         sortValue={sort}

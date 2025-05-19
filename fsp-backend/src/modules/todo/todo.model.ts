@@ -1,4 +1,4 @@
-import { TGetTodosQueryParams, TTodo, TTodoSorting } from "@/shared/types"
+import { TTodo } from "@/shared/types"
 
 import sql from "@/db"
 
@@ -22,17 +22,28 @@ const getTodosByLimitAndOffset = async (
     sorting?: string
   }
 ) => {
+  let orderBy: string
+
+  switch (params?.sorting) {
+    case "id_desc":
+      orderBy = "id DESC"
+      break
+    default:
+      orderBy = "id ASC"
+  }
+
   try {
     if (params?.filter?.length === 0 || !params?.filter) {
-      return sql`SELECT * FROM todo WHERE person_id = ${personId} ORDER BY id ASC LIMIT ${
-        params?.limit ?? 0
-      } OFFSET ${params?.offset ?? 0};`
+      return sql`SELECT * FROM todo WHERE person_id = ${personId} ORDER BY ${sql.unsafe(
+        orderBy
+      )} LIMIT ${params?.limit ?? 0} OFFSET ${params?.offset ?? 0};`
     }
+
     return sql`SELECT * FROM todo 
         WHERE person_id = ${personId} AND task ILIKE ${
       "%" + params?.filter + "%"
     }
-        ORDER BY id ASC LIMIT ${params?.limit ?? 0} OFFSET ${
+        ORDER BY ${sql.unsafe(orderBy)} LIMIT ${params?.limit ?? 0} OFFSET ${
       params?.offset ?? 0
     };`
   } catch (error) {

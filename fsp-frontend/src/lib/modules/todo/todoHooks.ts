@@ -20,11 +20,11 @@ import todoService from "@/lib/modules/todo/todoService"
 const queryKeys = {
   all: ["todos"],
   infinite: ["infinite", "todos"],
-  offset: (params: { limit: number; offset: number; filter: string }) => [
+  offset: (params: { limit: number; offset: number; sorting: string }) => [
     ...queryKeys.all,
     params.limit,
     params.offset,
-    // params.filter,
+    params.sorting,
   ],
 }
 
