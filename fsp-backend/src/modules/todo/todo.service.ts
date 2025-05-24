@@ -1,4 +1,4 @@
-import { TGetTodosQueryParams, TTodo, TTodoSorting } from "@/shared/types"
+import { TTodo } from "@/shared/types"
 import todoModel from "@/modules/todo/todo.model"
 
 const getAllTodos = (personId: number) => todoModel.getAllTodos(personId)
@@ -13,8 +13,16 @@ const getTodosByLimitAndOffset = async (
     sorting?: string
   }
 ) => {
-  const todos = await todoModel.getTodosByLimitAndOffset(personId, params)
-  const count = await todoModel.getTodosCount(personId, params?.filter ?? "")
+  const filter = params?.filter ? params.filter : ""
+  const limit = params?.limit ? parseInt(params.limit) : 100
+  const offset = params?.offset ? parseInt(params.offset) : 0
+
+  const todos = await todoModel.getTodosByLimitAndOffset(personId, {
+    filter,
+    limit,
+    offset,
+  })
+  const count = await todoModel.getTodosCount(personId, filter)
 
   return {
     data: todos,

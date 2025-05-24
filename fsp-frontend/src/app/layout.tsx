@@ -1,11 +1,14 @@
 import type { ReactNode } from "react"
 import type { Metadata } from "next"
+import Script from "next/script"
 
 import routes from "@/lib/constants"
 
 import TopNavigation from "@/lib/components/TopNavigation"
 
 import "@/app/globals.css"
+
+const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID
 
 // Import Order
 // - Types & Interfaces
@@ -29,6 +32,21 @@ const RootLayout = ({ children }: Props) => {
   const topNavigationRoutes = [routes.HOME, routes.MODULE]
   return (
     <html lang="en">
+      <head>
+        <Script
+          strategy="afterInteractive"
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+        />
+
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', '${GA_MEASUREMENT_ID}');
+        `}
+        </Script>
+      </head>
       <body className="flex flex-col min-h-screen">
         <TopNavigation routes={topNavigationRoutes} />
         {children}

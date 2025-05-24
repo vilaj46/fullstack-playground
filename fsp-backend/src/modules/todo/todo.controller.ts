@@ -7,7 +7,7 @@ import { TRequest, TResponse } from "@/types"
 import { getPersonIdFromToken } from "@/modules/auth/auth.utils"
 import todoService from "@/modules/todo/todo.service"
 
-const getAllTodos = async (
+const getTodos = async (
   request: TRequest<{
     reqQuery?: {
       filter?: string
@@ -107,4 +107,4 @@ const toggleTodo = async (
   }
 }
 
-export default { getAllTodos, createTodo, deleteTodo, toggleTodo }
+export default { getTodos, createTodo, deleteTodo, toggleTodo }

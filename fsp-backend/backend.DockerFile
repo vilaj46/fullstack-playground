@@ -48,10 +48,11 @@ COPY . .
 
 RUN chown -R pptruser:node /app/fsp-backend
 
-USER pptruser
-
-# RUN node /app/fsp-backend/src/db/seed.js
-
 EXPOSE 8080
 
-CMD ["sh", "-c", "npm run seed --exit && npm run dev"]
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+USER pptruser
+
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]

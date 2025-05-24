@@ -1,11 +1,16 @@
+import { eq } from "drizzle-orm"
+
 import { TCredentialsDto } from "@/shared/types"
 
-import sql from "@/db"
+import db from "@/db"
+import { personSchema } from "@/db/schemas"
 
 const login = async (credentials: TCredentialsDto) => {
   try {
-    const [user] =
-      await sql`SELECT * FROM person WHERE username = ${credentials.username}`
+    const [user] = await db
+      .select()
+      .from(personSchema)
+      .where(eq(personSchema.username, credentials.username))
 
     if (!user) {
       throw new Error("Failed to login")
@@ -20,9 +25,14 @@ const login = async (credentials: TCredentialsDto) => {
 const signup = async (credentials: TCredentialsDto) => {
   try {
     const { username, password } = credentials
-    const [user] = await sql`INSERT INTO person (username, password) 
-                VALUES (${username}, ${password})
-                RETURNING *;`
+
+    const [user] = await db
+      .insert(personSchema)
+      .values({
+        username,
+        password,
+      })
+      .returning()
 
     if (!user) {
       throw new Error(`Failed to signup`)
