@@ -10,7 +10,7 @@ npx drizzle-kit push
 
 if [ "$RUN_SEED" = "true" ]; then
   echo "Running seed script..."
-  npx tsx src/db/seed.ts
+  npx tsx src/db/seed/index.ts
 fi
 
 echo "Starting dev server..."

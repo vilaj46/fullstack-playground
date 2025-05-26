@@ -1,10 +1,17 @@
-import { asc, and, eq, desc, ilike, sql } from "drizzle-orm"
+import { and, eq, desc, ilike, sql } from "drizzle-orm"
 
 import { TTodo } from "@/shared/types"
 
-import ApiError from "@/shared/classes/ApiError"
-import db from "@/db"
+import { TGetTodosQuery } from "@/modules/todo/todo.types"
+
+import { todoSorting } from "@/shared/constants"
+import { todoSortingMap } from "@/modules/todo/todo.constants"
+
 import { todoSchema } from "@/db/schemas"
+
+import { ApiError } from "@/shared/classes"
+
+import db from "@/db"
 
 const getAllTodos = async (personId: number) => {
   try {
@@ -20,39 +27,30 @@ const getAllTodos = async (personId: number) => {
 
 const getTodosByLimitAndOffset = async (
   personId: number,
-  params: {
-    filter: string
-    limit: number
-    offset: number
-  }
+  params: TGetTodosQuery
 ) => {
-  const { filter, limit, offset } = params
+  const { filter, limit, offset, sorting } = params
 
   try {
+    const where = [eq(todoSchema.person_id, personId)]
+
     if (filter.length > 0) {
-      return await db
-        .select()
-        .from(todoSchema)
-        .where(
-          and(
-            eq(todoSchema.person_id, personId),
-            ilike(todoSchema.task, `%${filter}%`)
-          )
-        )
-        .orderBy(asc(todoSchema.id))
-        .offset(offset)
-        .limit(limit)
+      where.push(ilike(todoSchema.task, `%${filter}%`))
     }
 
-    return await db
+    const todos = await db
       .select()
       .from(todoSchema)
-      .where(eq(todoSchema.person_id, personId))
-      .orderBy(asc(todoSchema.id))
+      .where(and(...where))
+      .orderBy(todoSortingMap[sorting] ?? todoSortingMap[todoSorting.NONE])
       .offset(offset)
       .limit(limit)
+
+    return todos
   } catch (error) {
-    throw new Error(`Failed to fetch todos with limit and offset: ${error}`)
+    throw new Error(
+      `Failed to fetch todos with limit and offset: ${String(error)}`
+    )
   }
 }
 

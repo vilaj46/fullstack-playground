@@ -7,25 +7,26 @@ class Database {
   private name: string
   private url: string
 
-  constructor(TNodeEnv?: TNodeEnv) {
-    this.name = this.computeDbName(TNodeEnv)
+  constructor(nodeEnv?: TNodeEnv) {
+    this.name = this.computeDbName(nodeEnv)
     this.url = this.computeDbUrl(this.name)
     this.db = drizzle(this.url)
   }
 
-  private computeDbName(TNodeEnv?: TNodeEnv): string {
-    if (TNodeEnv === "test") {
-      return process.env.POSTGRES_TEST_DB ?? ""
-    }
-    return process.env.POSTGRES_DB ?? ""
+  private computeDbName(nodeEnv?: TNodeEnv): string {
+    return nodeEnv === "test"
+      ? this.getEnvOrThrow("POSTGRES_TEST_DB")
+      : this.getEnvOrThrow("POSTGRES_DB")
   }
 
   private computeDbUrl(name: string): string {
-    const username = process.env.POSTGRES_USERNAME ?? ""
-    const password = process.env.POSTGRES_PASSWORD ?? ""
-    const container = process.env.POSTGRES_CONTAINER ?? ""
-    const port = process.env.POSTGRES_PORT ?? "5432"
-    return `postgres://${username}:${password}@${container}:${port}/${name}`
+    const username = this.getEnvOrThrow("POSTGRES_USERNAME")
+    const password = this.getEnvOrThrow("POSTGRES_PASSWORD")
+    const container = this.getEnvOrThrow("POSTGRES_CONTAINER")
+    const port = this.getEnvOrThrow("POSTGRES_PORT")
+    return new URL(
+      `postgres://${username}:${password}@${container}:${port}/${name}`
+    ).toString()
   }
 
   getDbName(): string {
@@ -34,6 +35,15 @@ class Database {
 
   getDbUrl(): string {
     return this.url
+  }
+
+  getEnvOrThrow(key: string): string {
+    const value = process.env[key]
+    if (!value) {
+      throw new Error(`Missing env variable: ${key}`)
+    }
+
+    return value
   }
 }
 

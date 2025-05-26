@@ -1,7 +1,8 @@
-import { NextFunction } from "express"
+import { NextFunction, Request } from "express"
 
 import { TTodo } from "@/shared/types"
 
+import { TGetTodosQuery } from "@/modules/todo/todo.types"
 import { TRequest, TResponse } from "@/types"
 
 import { getPersonIdFromToken } from "@/modules/auth/auth.utils"
@@ -9,13 +10,7 @@ import todoService from "@/modules/todo/todo.service"
 
 const getTodos = async (
   request: TRequest<{
-    reqQuery?: {
-      filter?: string
-      limit?: string
-      offset?: string
-      paginated?: string
-      sorting?: string
-    }
+    validatedQuery: TGetTodosQuery
   }>,
   response: TResponse,
   next: NextFunction
@@ -23,22 +18,25 @@ const getTodos = async (
   try {
     const personId = getPersonIdFromToken(request.cookies?.token)
 
-    if (!request.query) {
+    if (!request.validatedQuery) {
       const todos = await todoService.getAllTodos(personId)
-      response.status(200).json(todos)
+      response.status(200).json({
+        data: todos,
+      })
       return
     }
 
+    // const { filter, limit, offset } = request.validatedQuery
+
     const todos = await todoService.getTodosByLimitAndOffset(
       personId,
-      request.query
+      request.validatedQuery
     )
 
-    if (request.query && "paginated" in request?.query) {
-      response.status(200).json(todos)
-    } else {
-      response.status(200).json(todos.data)
-    }
+    response.status(200).json({
+      data: todos.data,
+      pagination: todos.pagination,
+    })
   } catch (error) {
     next(error)
   }

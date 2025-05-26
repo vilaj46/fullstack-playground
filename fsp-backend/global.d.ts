@@ -14,6 +14,13 @@ declare global {
       POSTGRES_USERNAME?: string
       POSTGRES_TEST_DB?: string
       SECRET_KEY?: string
+      POSTGRES_URL?: string
+      RESET_DB?: string
+    }
+  }
+  namespace Express {
+    interface Request {
+      validatedQuery?: any
     }
   }
 }

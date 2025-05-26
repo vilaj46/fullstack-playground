@@ -1,33 +1,36 @@
 import { TTodo } from "@/shared/types"
+
+import { TGetTodosQuery } from "@/modules/todo/todo.types"
+
 import todoModel from "@/modules/todo/todo.model"
 
 const getAllTodos = (personId: number) => todoModel.getAllTodos(personId)
 
 const getTodosByLimitAndOffset = async (
   personId: number,
-  params?: {
-    filter?: string
-    limit?: string
-    offset?: string
-    paginated?: string
-    sorting?: string
-  }
+  params: TGetTodosQuery
 ) => {
-  const filter = params?.filter ? params.filter : ""
-  const limit = params?.limit ? parseInt(params.limit) : 100
-  const offset = params?.offset ? parseInt(params.offset) : 0
+  const { filter, limit, offset, sorting } = params
 
-  const todos = await todoModel.getTodosByLimitAndOffset(personId, {
-    filter,
-    limit,
-    offset,
-  })
-  const count = await todoModel.getTodosCount(personId, filter)
+  const [todos, count] = await Promise.all([
+    todoModel.getTodosByLimitAndOffset(personId, {
+      filter,
+      limit,
+      offset,
+      sorting,
+    }),
+    todoModel.getTodosCount(personId, filter),
+  ])
+
+  const totalPages = Math.ceil(count / limit)
 
   return {
     data: todos,
     pagination: {
-      totalPages: Math.ceil(count / parseInt(params?.limit ?? "0")),
+      totalItems: count,
+      totalPages,
+      limit,
+      offset,
     },
   }
 }

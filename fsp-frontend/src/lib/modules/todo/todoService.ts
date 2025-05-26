@@ -24,7 +24,7 @@ const getOffsetTodos = async (params: TGetTodosQueryParams) => {
     ...params,
     paginated: true,
   })
-  return await getRequest<TGetTodosApiOffsetResponse>(`/todos?${query}`)
+  return await getRequest<TGetTodosApiOffsetResponse>(`/todos?${query}  `)
 }
 
 const createTodo = async (task: TTodo["task"]) =>

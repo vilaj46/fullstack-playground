@@ -7,6 +7,7 @@ type TRequest<
     reqBody?: Request["body"]
     reqQuery?: Request["query"]
     locals?: Record<string, any>
+    validatedQuery?: Record<string, any>
   }> = {}
 > = Request<
   T["params"],
@@ -14,7 +15,9 @@ type TRequest<
   T["reqBody"],
   T["reqQuery"],
   T["locals"] extends Record<string, any> ? T["locals"] : Record<string, any>
->
+> & {
+  validatedQuery?: T["validatedQuery"]
+}
 
 type TResponse<
   T extends Partial<{
