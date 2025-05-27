@@ -2,7 +2,7 @@ import db from "@/db"
 import { hashPassword } from "@/modules/auth/auth.utils"
 import { personSchema } from "@/db/schemas"
 
-const createPerson = async (username: string, password: string) => {
+export const createPerson = async (username: string, password: string) => {
   const passwordHash = await hashPassword(password)
   return {
     username,

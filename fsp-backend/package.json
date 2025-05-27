@@ -6,7 +6,7 @@
     "nodemon": "nodemon -e ts,js --exec ts-node -r tsconfig-paths/register ./src/index.ts",
     "dev": "npm run nodemon",
     "start": "ts-node src/index.ts",
-    "test": "NODE_ENV=test vitest run",
+    "test": "NODE_ENV=test drizzle-kit push --config drizzle.config.tester.ts && vitest run",
     "build": "tsc",
     "seed": "ts-node src/db/seed.ts"
   },
@@ -48,6 +48,7 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.8.3",
+    "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.1.3"
   }
 }

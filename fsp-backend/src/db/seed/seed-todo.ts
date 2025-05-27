@@ -2,7 +2,11 @@ import db from "@/db"
 import mocks from "@/db/mocks"
 import { todoSchema } from "@/db/schemas"
 
-const createTodo = (personId: number, task: string, isCompleted = false) => ({
+export const createTodo = (
+  personId: number,
+  task: string,
+  isCompleted = false
+) => ({
   person_id: personId,
   task,
   completed: isCompleted,

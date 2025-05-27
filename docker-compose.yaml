@@ -79,19 +79,6 @@ services:
       - psql:/var/lib/postgresql/data
     ports:
       - 5432:5432
-  # seed:
-  #   networks: 
-  #     - backend
-  #   build:
-  #     context: ./fsp-backend
-  #     dockerfile: backend.DockerFile
-  #   command: sh -c "npx tsx src/seed.ts"
-  #   env_file:
-  #     - ./fsp-backend/.env
-  #   depends_on:
-  #     - db:
-  #       condition: service_healthy
-  #   target: seed
 volumes:
   psql:
 

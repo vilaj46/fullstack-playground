@@ -1,13 +1,19 @@
 {
   "exclude": ["dist", "node_modules"],
-  "include": ["../shared/**/*", "src/**/*", "global.d.ts", "drizzle.config.ts"],
+  "include": [
+    "../shared/**/*",
+    "src/**/*",
+    "global.d.ts",
+    "drizzle.config.ts",
+    "drizzle.config.tester.ts"
+  ],
   "compilerOptions": {
     "target": "es2022",
     "module": "commonjs",
     "baseUrl": "." /* Specify the base directory to resolve non-relative module names. */,
     "paths": {
       "@/shared/*": ["../shared/*"],
-      "@/*": ["./src/*"]
+      "@/*": ["src/*"]
     } /* Specify a set of entries that re-map imports to additional lookup locations. */,
     // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
     "typeRoots": [

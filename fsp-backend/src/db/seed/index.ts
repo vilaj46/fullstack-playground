@@ -2,7 +2,7 @@ import "dotenv/config"
 import { sql } from "drizzle-orm"
 
 import db from "@/db"
-import seedTodo from "@/db/seed/seed.todo"
+import seedTodo from "@/db/seed/seed-todo"
 import seedPerson from "@/db/seed/seed-person"
 
 async function seedDatabase() {
