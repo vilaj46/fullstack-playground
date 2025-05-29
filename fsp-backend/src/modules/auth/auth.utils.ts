@@ -15,6 +15,21 @@ const createSessionToken = (personId: number) => {
   })
 }
 
+const createRefreshToken = (personId: number) => {
+  if (!process.env.SECRET_KEY) {
+    throw new Error("Invalid secret key")
+  }
+
+  const expiresIn = 7 * 24 * 60 * 60 * 1000
+
+  const expiresAt = Date.now() + expiresIn
+  const token = jwt.sign({ personId }, process.env.SECRET_KEY, {
+    expiresIn: "7d",
+  })
+
+  return { expiresAt, personId, token }
+}
+
 const decodeToken = (token?: string) => {
   if (!token) {
     throw new Error("Invalid token")
@@ -52,6 +67,7 @@ const hashPassword = async (password: string) => {
 
 export {
   comparePasswords,
+  createRefreshToken,
   createSessionToken,
   decodeToken,
   getPersonIdFromToken,

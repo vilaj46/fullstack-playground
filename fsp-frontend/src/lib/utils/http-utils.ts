@@ -4,19 +4,40 @@ import type { AxiosRequestConfig, AxiosResponse } from "axios"
 import ApiError from "@/shared/classes/ApiError"
 import { isValidStatusCode } from "@/shared/utils"
 
+const api = axios.create({ baseURL: process.env.NEXT_PUBLIC_BACKEND_BASE_URL })
+
+api.interceptors.response.use(
+  (res) => res,
+  async (err) => {
+    const originalRequest = err.config
+
+    if (err.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true
+
+      try {
+        await api.post("/refreshtoken", {}, { withCredentials: true })
+        return api(originalRequest)
+      } catch (refreshError) {
+        return Promise.reject(refreshError)
+      }
+    }
+
+    return Promise.reject(err)
+  }
+)
+
 const request = async <Response, Data = undefined, Errors = undefined>(
   config: AxiosRequestConfig<Data>
 ): Promise<Response> => {
   try {
-    const response = await axios<Response, AxiosResponse<Response>, Data>({
+    const response = await api<Response, AxiosResponse<Response>, Data>({
       ...config,
-      baseURL: process.env.NEXT_PUBLIC_BACKEND_BASE_URL,
       withCredentials: true,
     })
 
     return response.data
   } catch (error) {
-    // HandleError function
+    // TODO: HandleError function
     const errors =
       axios.isAxiosError(error) && "errors" in error.response?.data
         ? error.response?.data.errors

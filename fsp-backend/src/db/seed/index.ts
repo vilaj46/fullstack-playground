@@ -12,7 +12,7 @@ async function seedDatabase() {
 
   try {
     await db.execute(sql`
-      TRUNCATE TABLE person, todo RESTART IDENTITY CASCADE; 
+      TRUNCATE TABLE person, refresh_token, todo RESTART IDENTITY CASCADE; 
     `)
     const persons = await seedPerson()
     await seedTodo(persons[0].id)

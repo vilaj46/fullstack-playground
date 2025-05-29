@@ -1,7 +1,11 @@
 import { TCredentialsDto } from "@/shared/types"
 
 import authModel from "@/modules/auth/auth.model"
-import { comparePasswords, hashPassword } from "@/modules/auth/auth.utils"
+import {
+  comparePasswords,
+  createRefreshToken,
+  hashPassword,
+} from "@/modules/auth/auth.utils"
 
 const login = async (credentials: TCredentialsDto) => {
   const user = await authModel.login(credentials)
@@ -18,6 +22,14 @@ const login = async (credentials: TCredentialsDto) => {
   return user
 }
 
+const postRefreshToken = async (personId: number) => {
+  const refreshToken = createRefreshToken(personId)
+
+  await authModel.postRefreshToken(refreshToken)
+
+  return refreshToken
+}
+
 const signup = async (credentials: TCredentialsDto) => {
   const hashedPassword = await hashPassword(credentials.password)
 
@@ -27,4 +39,4 @@ const signup = async (credentials: TCredentialsDto) => {
   })
 }
 
-export default { login, signup }
+export default { login, postRefreshToken, signup }

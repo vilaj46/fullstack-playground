@@ -1,3 +1,4 @@
+import { ApiError } from "@/shared/classes"
 import { NextFunction, Request, Response } from "express"
 import jwt from "jsonwebtoken"
 
@@ -16,7 +17,9 @@ const authMiddleware = (
     jwt.verify(token, process.env.SECRET_KEY)
     next()
   } catch (error) {
-    throw new Error("Invalid token")
+    throw new ApiError(401, {
+      message: `Failed to verify token: ${error}`,
+    })
   }
 }
 
