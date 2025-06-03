@@ -31,7 +31,7 @@ const postRefreshToken = async (
   const refreshToken = createRefreshToken(personId)
 
   const key = `person:${personId}:token`
-  await redisClient.hSet(key, refreshToken)
+  await redisClient.hSet(key, { token: refreshToken.token })
   await redisClient.expire(key, 604800) // 7 days same as token
 
   return refreshToken
@@ -46,4 +46,8 @@ const signup = async (credentials: TCredentialsDto) => {
   })
 }
 
-export default { login, postRefreshToken, signup }
+export default {
+  login,
+  postRefreshToken,
+  signup,
+}

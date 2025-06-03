@@ -4,14 +4,21 @@ import express from "express"
 import cookieParser from "cookie-parser"
 import cors from "cors"
 
-import routes from "@/routes"
-
+import _db from "@/db"
 import connectRedis from "@/redis"
 import { errorMiddleware } from "@/middleware"
 
+import routes from "@/routes"
+
+// Memory usage logging every 5 seconds
+setInterval(() => {
+  const used = process.memoryUsage().heapUsed / 1024 / 1024
+  console.log(`Memory usage: ${Math.round(used * 100) / 100} MB`)
+}, 5000)
+
 export const createApp = async () => {
   const app = express()
-  const port = process.env.PORT || 8080
+  const port = Number(process.env.PORT) || 8080
 
   const corsOptions = {
     allowedHeaders: ["Authorization", "Content-Type"],
@@ -23,7 +30,14 @@ export const createApp = async () => {
         : process.env.FRONTEND_BASE_URL,
   }
 
-  const redisClient = await connectRedis()
+  let redisClient
+  try {
+    redisClient = await connectRedis()
+    console.log("✅ Connected to Redis")
+  } catch (err) {
+    console.error("❌ Redis connection failed:", err)
+    process.exit(1) // fail early if Redis is required
+  }
   app.set("redisClient", redisClient)
 
   app.use(cors(corsOptions))
@@ -32,7 +46,7 @@ export const createApp = async () => {
   app.use(routes)
   app.use(errorMiddleware)
 
-  app.listen(port, () => {
+  app.listen(port, "0.0.0.0", () => {
     console.log(`Example app listening on port ${port}.`)
   })
 

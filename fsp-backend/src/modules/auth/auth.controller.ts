@@ -7,7 +7,7 @@ import { TRequest, TResponse } from "@/types"
 
 import authService from "@/modules/auth/auth.service"
 import { createSessionToken, decodeToken } from "@/modules/auth/auth.utils"
-
+console.log("auth controller loaded")
 const getPerson = async (
   request: TRequest,
   response: TResponse,

@@ -3,14 +3,21 @@ import { drizzle, NodePgDatabase } from "drizzle-orm/node-postgres"
 import { TNodeEnv } from "@/shared/types"
 
 class Database {
-  public db: NodePgDatabase
+  public db: NodePgDatabase = {} as NodePgDatabase
   private name: string
   private url: string
 
   constructor(nodeEnv?: TNodeEnv) {
     this.name = this.computeDbName(nodeEnv)
     this.url = this.computeDbUrl(this.name)
-    this.db = drizzle(this.url)
+
+    console.log(`🔌 Connecting to DB: ${this.url}`)
+    try {
+      this.db = drizzle(this.url)
+      console.log(`✅ Connected to DB: ${this.url}`)
+    } catch (error) {
+      console.error("❌ Failed to connect to DB:", error)
+    }
   }
 
   private computeDbName(nodeEnv?: TNodeEnv): string {
