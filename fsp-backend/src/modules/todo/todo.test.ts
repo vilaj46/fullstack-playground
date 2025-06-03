@@ -16,7 +16,7 @@ describe("test todo functionality", () => {
   let cookie: string
 
   beforeAll(async () => {
-    app = createApp()
+    app = await createApp()
 
     const db = new Database("test").db
 
