@@ -1,6 +1,7 @@
 export const MODULES = {
   DASHBOARD: "DASHBOARD",
   PERSON: "PERSON",
+  POST: "POST",
   TODO: "TODO",
 } as const
 

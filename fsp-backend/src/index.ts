@@ -6,9 +6,10 @@ import cors from "cors"
 
 import routes from "@/routes"
 
+import connectRedis from "@/redis"
 import { errorMiddleware } from "@/middleware"
 
-export const createApp = () => {
+export const createApp = async () => {
   const app = express()
   const port = process.env.PORT || 8080
 
@@ -21,6 +22,9 @@ export const createApp = () => {
         ? process.env.FRONTEND_LOCAL_URL
         : process.env.FRONTEND_BASE_URL,
   }
+
+  const redisClient = await connectRedis()
+  app.set("redisClient", redisClient)
 
   app.use(cors(corsOptions))
   app.use(cookieParser())

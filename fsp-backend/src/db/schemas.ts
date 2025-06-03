@@ -13,6 +13,12 @@ const personSchema = pgTable("person", {
   password: text().notNull(),
 })
 
+const postSchema = pgTable("post", {
+  id: serial().primaryKey(),
+  title: text().notNull().unique(),
+  likes: integer().default(0),
+})
+
 const refreshTokenSchema = pgTable("refresh_token", {
   created_at: timestamp().defaultNow(),
   id: serial().primaryKey(),
@@ -32,4 +38,4 @@ const todoSchema = pgTable("todo", {
   task: text().notNull(),
 })
 
-export { personSchema, refreshTokenSchema, todoSchema }
+export { personSchema, postSchema, refreshTokenSchema, todoSchema }

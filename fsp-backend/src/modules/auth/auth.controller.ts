@@ -7,9 +7,6 @@ import { TRequest, TResponse } from "@/types"
 
 import authService from "@/modules/auth/auth.service"
 import { createSessionToken, decodeToken } from "@/modules/auth/auth.utils"
-import db from "@/db"
-import { refreshTokenSchema } from "@/db/schemas"
-import { and, eq } from "drizzle-orm"
 
 const getPerson = async (
   request: TRequest,
@@ -44,15 +41,15 @@ const postRefreshToken = async (
       throw new Error("invalid token")
     }
 
-    const [refreshToken] = await db
-      .select()
-      .from(refreshTokenSchema)
-      .where(
-        and(
-          eq(refreshTokenSchema.token, request.cookies.refreshToken),
-          eq(refreshTokenSchema.person_id, verified.personId)
-        )
-      )
+    const redisClient = await request.app.get("redisClient")
+
+    if (!redisClient) {
+      throw new Error("No redis client")
+    }
+
+    const refreshToken = await redisClient.hGetAll(
+      `person:${verified.personId}:token`
+    )
 
     if (!refreshToken) {
       throw new Error("Invalid token")
@@ -97,9 +94,13 @@ const postLogin = async (
       throw new Error("Failed to assign token")
     }
 
+    const redisClient = request.app.get("redisClient")
     const token = createSessionToken(user.id)
 
-    const refreshToken = await authService.postRefreshToken(user.id)
+    const refreshToken = await authService.postRefreshToken(
+      redisClient,
+      user.id
+    )
 
     response.cookie("token", token, {
       httpOnly: true,

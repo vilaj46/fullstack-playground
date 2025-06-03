@@ -39,6 +39,12 @@ const AuthenticatedSidebar = (props: Props) => {
           </button>
           <button
             className="inline text-left hover:cursor-pointer hover:text-gray-300"
+            onClick={() => props.onModuleSelect(MODULES.POST)}
+          >
+            Post
+          </button>
+          <button
+            className="inline text-left hover:cursor-pointer hover:text-gray-300"
             onClick={() => props.onModuleSelect(MODULES.TODO)}
           >
             Todo

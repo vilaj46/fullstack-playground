@@ -8,6 +8,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
 import { MODULES } from "./constants"
 import type { TModule } from "./constants"
+import { PostList } from "@/lib/modules/post/postComponents"
 
 const AdminDashboard = () => {
   const pathname = usePathname()
@@ -45,6 +46,8 @@ const AdminDashboard = () => {
           <div>Person</div>
         ) : module === MODULES.TODO ? (
           <Todos />
+        ) : module === MODULES.POST ? (
+          <PostList />
         ) : (
           <div>Dashboard</div>
         )}

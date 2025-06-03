@@ -16,6 +16,7 @@ declare global {
       SECRET_KEY?: string
       POSTGRES_URL?: string
       RESET_DB?: string
+      REDIS_URL?: string
     }
   }
   namespace Express {

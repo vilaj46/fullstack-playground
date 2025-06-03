@@ -1,3 +1,5 @@
+import { RedisClientType } from "@redis/client"
+
 import { TCredentialsDto } from "@/shared/types"
 
 import authModel from "@/modules/auth/auth.model"
@@ -22,10 +24,15 @@ const login = async (credentials: TCredentialsDto) => {
   return user
 }
 
-const postRefreshToken = async (personId: number) => {
+const postRefreshToken = async (
+  redisClient: RedisClientType,
+  personId: number
+) => {
   const refreshToken = createRefreshToken(personId)
 
-  await authModel.postRefreshToken(refreshToken)
+  const key = `person:${personId}:token`
+  await redisClient.hSet(key, refreshToken)
+  await redisClient.expire(key, 604800) // 7 days same as token
 
   return refreshToken
 }
