@@ -4,17 +4,10 @@ import express from "express"
 import cookieParser from "cookie-parser"
 import cors from "cors"
 
-import _db from "@/db"
 import connectRedis from "@/redis"
 import { errorMiddleware } from "@/middleware"
 
 import routes from "@/routes"
-
-// Memory usage logging every 5 seconds
-setInterval(() => {
-  const used = process.memoryUsage().heapUsed / 1024 / 1024
-  console.log(`Memory usage: ${Math.round(used * 100) / 100} MB`)
-}, 5000)
 
 export const createApp = async () => {
   const app = express()
