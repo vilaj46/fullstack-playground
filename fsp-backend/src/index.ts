@@ -29,7 +29,7 @@ export const createApp = async () => {
     console.log("✅ Connected to Redis")
   } catch (err) {
     console.error("❌ Redis connection failed:", err)
-    process.exit(1) // fail early if Redis is required
+    process.exit(1)
   }
   app.set("redisClient", redisClient)
 
