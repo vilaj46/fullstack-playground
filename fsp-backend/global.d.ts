@@ -25,7 +25,7 @@ declare global {
   }
   namespace Express {
     interface Request {
-      validatedQuery?: any
+      validatedQuery?: unknown
     }
   }
 }
