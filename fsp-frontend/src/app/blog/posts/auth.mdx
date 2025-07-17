@@ -1,0 +1,69 @@
+---
+title: "Authentication / Authorization"
+publishedAt: "2025-07-16"
+summary: "Modern authentication and authorization"
+---
+
+# Auth Flow Overview
+
+1. **User logs in** with username and password.
+
+2. **Server verifies** credentials and creates a **session cookie** (short-lived access token or session ID).
+
+3. **Server generates a refresh token**, storing it securely in cache (e.g., Redis or database).
+
+4. **Server sends the refresh token** as a secure, httpOnly cookie to the client.
+
+5. Authenticated routes grab the access token from cookies.
+
+6. Middleware verifies the access token before proceeding.
+
+7. If middleware verification fails with a 401, the client intercepts the response and triggers the refresh token flow.
+
+8. The client sends the refresh token from cookies to the server.
+
+9. The server verifies the refresh token against its cache.
+
+10. If valid, the server creates a new session (access) token and updates the cookie.
+
+//NextJS
+
+Server Components (e.g. layout.tsx, page.tsx):
+
+Use cookies() to access and verify tokens on the server.
+
+Ideal for SSR auth + rendering protected pages.
+
+API Routes (/app/api/...):
+
+Use server middleware to guard private endpoints.
+
+Works exactly like any Express backend.
+
+Middleware (middleware.ts):
+
+Runs before routing — good for blocking access to certain pages if user is not authenticated.
+
+Client Components:
+
+Use fetch, and your axios interceptor to automatically retry via refresh tokens.
+
+// TODO
+
+Token Rotation (optional but recommended):
+When you issue a new access token, you can also issue a new refresh token and replace the old one in both cookie and cache. This reduces risk if a refresh token is leaked.
+
+Revoke Refresh Tokens:
+Provide a way to revoke refresh tokens (e.g., logout or suspicious activity). When revoked, the refresh token is removed from the cache and can no longer be used.
+
+Handle Refresh Token Expiry:
+If the refresh token itself expires or is missing/invalid during refresh attempts, force the user to log in again (hard logout).
+
+Secure Cookie Flags:
+Set HttpOnly, Secure, SameSite flags on cookies to reduce attack surface (XSS, CSRF).
+
+Rate Limiting / Brute Force Protection:
+Apply rate limiting on login and refresh endpoints to avoid abuse.
+
+Logging and Monitoring:
+Log refresh token usage and failures for audit and anomaly detection.

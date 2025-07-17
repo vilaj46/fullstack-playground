@@ -28,6 +28,8 @@ services:
           path: package.json
         - action: rebuild
           path: ./shared
+    networks:
+      - backend
     volumes:
       - ./shared:/app/shared
   backend:
@@ -53,6 +55,9 @@ services:
           target: /app/fsp-backend/src
           ignore: 
             - node_modules/
+        - action: sync
+          path: ./fsp-backend/public-cdn      
+          target: /app/fsp-backend/public-cdn
         - action: rebuild
           path: package.json
         - action: rebuild

@@ -3,30 +3,34 @@ import { Request, Response } from "express"
 type TRequest<
   T extends Partial<{
     params?: Request["params"]
-    resBody?: any
+    resBody?: unknown
     reqBody?: Request["body"]
     reqQuery?: Request["query"]
-    locals?: Record<string, any>
-    validatedQuery?: Record<string, any>
-  }> = {}
+    locals?: Record<string, unknown>
+    validatedQuery?: Record<string, unknown>
+  }> = object
 > = Request<
   T["params"],
   T["resBody"],
   T["reqBody"],
   T["reqQuery"],
-  T["locals"] extends Record<string, any> ? T["locals"] : Record<string, any>
+  T["locals"] extends Record<string, unknown>
+    ? T["locals"]
+    : Record<string, unknown>
 > & {
   validatedQuery?: T["validatedQuery"]
 }
 
 type TResponse<
   T extends Partial<{
-    resBody?: any
-    locals?: Record<string, any>
-  }> = {}
+    resBody?: unknown
+    locals?: Record<string, unknown>
+  }> = object
 > = Response<
   T["resBody"],
-  T["locals"] extends Record<string, any> ? T["locals"] : Record<string, any>
+  T["locals"] extends Record<string, unknown>
+    ? T["locals"]
+    : Record<string, unknown>
 >
 
 export type { TRequest, TResponse }

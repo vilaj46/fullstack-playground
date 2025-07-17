@@ -13,14 +13,25 @@ export const createApp = async () => {
   const app = express()
   const port = Number(process.env.PORT) || 8080
 
+  const allowedOrigins = [
+    process.env.FRONTEND_LOCAL_URL,
+    process.env.FRONTEND_BASE_URL,
+  ]
+
   const corsOptions = {
-    allowedHeaders: ["Authorization", "Content-Type"],
+    allowedHeaders: ["Authorization", "Cache-Control", "Content-Type"],
     credentials: true,
     methods: ["DELETE", "GET", "PATCH", "POST"],
-    origin:
-      process.env.NODE_ENV === "development"
-        ? process.env.FRONTEND_LOCAL_URL
-        : process.env.FRONTEND_BASE_URL,
+    origin: (
+      origin: string | undefined,
+      callback: (err: Error | null, allow?: boolean | string) => void
+    ) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, origin)
+      } else {
+        callback(new Error("Not allowed by CORS"))
+      }
+    },
   }
 
   let redisClient
@@ -34,6 +45,27 @@ export const createApp = async () => {
   app.set("redisClient", redisClient)
 
   app.use(cors(corsOptions))
+
+  if (process.env.NODE_ENV !== "production") {
+    app.options("/static", cors(corsOptions))
+    app.use(
+      "/static",
+      express.static("public-cdn", {
+        setHeaders: (res, _path, _stat) => {
+          const requestOrigin = res.req.headers.origin
+
+          if (requestOrigin && allowedOrigins.includes(requestOrigin)) {
+            res.setHeader("Access-Control-Allow-Origin", requestOrigin)
+            res.setHeader("Access-Control-Allow-Credentials", "true")
+          } else {
+            res.setHeader("Access-Control-Allow-Origin", "null")
+          }
+
+          res.setHeader("Cache-Control", "public, max-age=31536000")
+        },
+      })
+    )
+  }
   app.use(cookieParser())
   app.use(express.json())
   app.use(routes)

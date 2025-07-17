@@ -1,4 +1,4 @@
-import { NextFunction, Request } from "express"
+import { NextFunction } from "express"
 
 import { TTodo } from "@/shared/types"
 

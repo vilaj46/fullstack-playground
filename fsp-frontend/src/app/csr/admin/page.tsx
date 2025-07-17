@@ -7,8 +7,10 @@ import { redirect } from "next/navigation"
 import { usePostLogin, useSignup } from "@/lib/modules/auth/authHooks"
 
 import { useAuth } from "@/lib/providers/AuthProvider"
+import { useContent } from "@/lib/providers/ContentProvider"
 
 const Admin = () => {
+  const _ = useContent()
   const { isAuthenticated, handleLogin } = useAuth()
 
   const [form, setForm] = useState({
@@ -63,7 +65,7 @@ const Admin = () => {
     redirect("/csr/admin/dashboard")
   }
 
-  const actionText = isNewUser ? "Signup" : "Login"
+  const actionText = isNewUser ? "Signup" : _.Login
 
   return (
     <main className="bg-blue-400 flex flex-grow items-center justify-center">

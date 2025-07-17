@@ -4,6 +4,7 @@ import type { ReactNode } from "react"
 
 import { AuthProvider, ReactQueryProvider } from "@/lib/providers"
 import AuthGuard from "@/lib/modules/auth/components/AuthGuard"
+
 type Props = {
   children: ReactNode
 }

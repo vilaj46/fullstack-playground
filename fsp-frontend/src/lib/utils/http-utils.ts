@@ -4,7 +4,13 @@ import type { AxiosRequestConfig, AxiosResponse } from "axios"
 import ApiError from "@/shared/classes/ApiError"
 import { isValidStatusCode } from "@/shared/utils"
 
-const api = axios.create({ baseURL: process.env.NEXT_PUBLIC_BACKEND_BASE_URL })
+const isServer = typeof window === "undefined"
+
+const baseURL = isServer
+  ? process.env.NEXT_PUBLIC_BACKEND_BASE_URL_DOCKER ?? "http://backend:8080"
+  : process.env.NEXT_PUBLIC_BACKEND_BASE_URL ?? "http://localhost:8080"
+
+const api = axios.create({ baseURL })
 
 api.interceptors.response.use(
   (res) => res,
@@ -39,7 +45,9 @@ const request = async <Response, Data = undefined, Errors = undefined>(
   } catch (error) {
     // TODO: HandleError function
     const errors =
-      axios.isAxiosError(error) && "errors" in error.response?.data
+      axios.isAxiosError(error) &&
+      error.response?.data &&
+      "errors" in error.response.data
         ? error.response?.data.errors
         : {}
 
@@ -61,7 +69,7 @@ const request = async <Response, Data = undefined, Errors = undefined>(
   }
 }
 
-const getRequest = <Response, Errors = undefined>(
+const getRequest = async <Response, Errors = undefined>(
   url: string,
   config: AxiosRequestConfig = {}
 ) =>
