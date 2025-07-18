@@ -46,26 +46,26 @@ export const createApp = async () => {
 
   app.use(cors(corsOptions))
 
-  if (process.env.NODE_ENV !== "production") {
-    app.options("/static", cors(corsOptions))
-    app.use(
-      "/static",
-      express.static("public-cdn", {
-        setHeaders: (res, _path, _stat) => {
-          const requestOrigin = res.req.headers.origin
+  // if (process.env.NODE_ENV !== "production") {
+  //   app.options("/static", cors(corsOptions))
+  //   app.use(
+  //     "/static",
+  //     express.static("public-cdn", {
+  //       setHeaders: (res, _path, _stat) => {
+  //         const requestOrigin = res.req.headers.origin
 
-          if (requestOrigin && allowedOrigins.includes(requestOrigin)) {
-            res.setHeader("Access-Control-Allow-Origin", requestOrigin)
-            res.setHeader("Access-Control-Allow-Credentials", "true")
-          } else {
-            res.setHeader("Access-Control-Allow-Origin", "null")
-          }
+  //         if (requestOrigin && allowedOrigins.includes(requestOrigin)) {
+  //           res.setHeader("Access-Control-Allow-Origin", requestOrigin)
+  //           res.setHeader("Access-Control-Allow-Credentials", "true")
+  //         } else {
+  //           res.setHeader("Access-Control-Allow-Origin", "null")
+  //         }
 
-          res.setHeader("Cache-Control", "public, max-age=31536000")
-        },
-      })
-    )
-  }
+  //         res.setHeader("Cache-Control", "public, max-age=31536000")
+  //       },
+  //     })
+  //   )
+  // }
   app.use(cookieParser())
   app.use(express.json())
   app.use(routes)

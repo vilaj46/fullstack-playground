@@ -5,12 +5,20 @@ import { TRequest, TResponse } from "@/types"
 
 const requestMiddleware =
   (schema: ZodSchema, property: "query") =>
-  (request: TRequest, _response: TResponse, next: NextFunction) => {
+  (
+    request: TRequest,
+    response: TResponse<{
+      locals: {
+        validatedQuery: unknown
+      }
+    }>,
+    next: NextFunction
+  ) => {
     try {
       const result = schema.parse(request[property])
       if (request[property] && typeof request[property] === "object") {
         if (property === "query") {
-          request.validatedQuery = result
+          response.locals.validatedQuery = result
         }
       }
       next()

@@ -9,16 +9,18 @@ import { getPersonIdFromToken } from "@/modules/auth/auth.utils"
 import todoService from "@/modules/todo/todo.service"
 
 const getTodos = async (
-  request: TRequest<{
-    validatedQuery: TGetTodosQuery
+  request: TRequest,
+  response: TResponse<{
+    locals: {
+      validatedQuery: TGetTodosQuery
+    }
   }>,
-  response: TResponse,
   next: NextFunction
 ) => {
   try {
     const personId = getPersonIdFromToken(request.cookies?.token)
 
-    if (!request.validatedQuery) {
+    if (!response.locals.validatedQuery) {
       const todos = await todoService.getAllTodos(personId)
       response.status(200).json({
         data: todos,
@@ -30,7 +32,7 @@ const getTodos = async (
 
     const todos = await todoService.getTodosByLimitAndOffset(
       personId,
-      request.validatedQuery
+      response.locals.validatedQuery
     )
 
     response.status(200).json({

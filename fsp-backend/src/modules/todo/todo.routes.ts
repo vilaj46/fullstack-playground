@@ -1,4 +1,4 @@
-import express from "express"
+import express, { NextFunction, RequestHandler } from "express"
 
 import { GetTodosSchema } from "@/modules/todo/todo.schemas"
 

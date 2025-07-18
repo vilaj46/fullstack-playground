@@ -6,8 +6,8 @@ import AuthenticatedSidebar from "@/lib/modules/auth/components/AuthenticatedSid
 import Todos from "@/app/csr/todos/page"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
-import { MODULES } from "./constants"
-import type { TModule } from "./constants"
+import { MODULES } from "@/app/csr/admin/dashboard/constants"
+import type { TModule } from "@/app/csr/admin/dashboard/constants"
 import { PostList } from "@/lib/modules/post/postComponents"
 
 const AdminDashboard = () => {
